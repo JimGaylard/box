@@ -6,7 +6,28 @@
       dnf:
         name:
           - gnome-tweaks
+          - htop
           - neovim
+          - snapd
+          - strace
+    - name: snap symlink (for classic)
+      become: yes
+      file:
+        src: /var/lib/snapd/snap
+        dest: /snap
+        owner: root
+        group: root
+        state: link
+    - name: snap packages
+      become: yes
+      snap:
+        name:
+          - spotify
+    - name: snap install intellij
+      become: yes
+      snap:
+        name: intellij-idea-community
+        classic: yes
     - name: bashrc
       copy:
         src: ../dotfiles/bashrc
@@ -50,3 +71,5 @@
       get_url:
         url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         dest: ~/.config/nvim/autoload/plug.vim
+    - name: install plugins
+      command: vim +PlugInstall +qa
