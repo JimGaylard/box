@@ -1,15 +1,23 @@
 ---
 - hosts: localhost
+  vars:
+    fedora_release: 30
   tasks:
     - name: dnf packages
       become: yes
       dnf:
         name:
+          - 'https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_release }}.noarch.rpm'
+          - 'https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_release }}.noarch.rpm'
+          - emacs
+          - ffmpeg
+          - gnome-shell-extension-no-topleft-hot-corner
           - gnome-tweaks
           - htop
           - neovim
           - snapd
           - strace
+          - vlc
     - name: snap symlink (for classic)
       become: yes
       file:
@@ -63,6 +71,11 @@
         src: ../dotfiles/tmux.conf
         dest: ~/.tmux.conf
         force: yes
+    - name: spacemacs file
+      copy:
+        src: ../dotfiles/spacemacs
+        dest: ~/.spacemacs
+        force: yes
     - name: create nvim autoloads
       file:
         path: ~/.config/nvim/autoload
@@ -71,5 +84,13 @@
       get_url:
         url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         dest: ~/.config/nvim/autoload/plug.vim
-    - name: install plugins
+    - name: install vim plugins
       command: vim +PlugInstall +qa
+    - name: bash-my-aws
+      git:
+        repo: git@github.com:bash-my-universe/bash-my-aws.git
+        dest: ~/.bash-my-aws
+    - name: spacemacs
+      git:
+        repo: git@github.com:syl20bnr/spacemacs
+        dest: ~/.emacs.d
