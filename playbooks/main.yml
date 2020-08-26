@@ -1,7 +1,7 @@
 ---
 - hosts: localhost
   vars:
-    fedora_release: 30
+    fedora_release: 32
   tasks:
     - name: dnf packages
       become: yes
@@ -17,7 +17,7 @@
           - neovim
           - snapd
           - strace
-          - vlc
+          - the_silver_searcher
     - name: snap symlink (for classic)
       become: yes
       file:
@@ -30,11 +30,9 @@
       become: yes
       snap:
         name:
-          - core
-          - core18
           - postman
           - spotify
-    - name: snap install intellij
+    - name: snap install classic packages
       become: yes
       snap:
         name:
@@ -78,10 +76,15 @@
         src: ../dotfiles/tmux.conf
         dest: ~/.tmux.conf
         force: yes
-    - name: spacemacs file
+    - name: init.vim
       copy:
-        src: ../dotfiles/spacemacs
-        dest: ~/.spacemacs
+        src: ../dotfiles/vimrc
+        dest: ~/.config/nvim/init.vim
+        force: yes
+    - name: vimrc.bundles
+      copy:
+        src: ../dotfiles/vimrc.bundles
+        dest: ~/.config/nvim/vimrc.bundles
         force: yes
     - name: create nvim autoloads
       file:
@@ -92,12 +95,8 @@
         url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         dest: ~/.config/nvim/autoload/plug.vim
     - name: install vim plugins
-      command: vim +PlugInstall +qa
+      command: vim +'PlugInstall --sync' +qa
     - name: bash-my-aws
       git:
         repo: git@github.com:bash-my-universe/bash-my-aws.git
         dest: ~/.bash-my-aws
-    - name: spacemacs
-      git:
-        repo: git@github.com:syl20bnr/spacemacs
-        dest: ~/.emacs.d
