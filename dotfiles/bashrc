@@ -31,17 +31,12 @@ fi
 
 if [ -e ~/.bash_prompt ]
 then
-  # shellcheck source=/home/jgaylard/.bash_prompt
   source ~/.bash_prompt
 else
   TITLEBAR="\[\e]2;\w\a\]"
-  GIT_PS1_SHOWDIRTYSTATE=1
-  PROMPT="\u@\h:\w\$(__git_ps1 ' [%s]')\n\$ "
+  PROMPT="\u:\w\n\$ "
   PS1="$TITLEBAR\[\e[32;1m\]$PROMPT\[\e[0m\]"
 fi
-
-# shellcheck source=/home/jgaylard/.git-prompt.sh
-[ -e ~/.git-prompt.sh ] && source "$HOME/.git-prompt.sh"
 
 if [ -e /usr/local/share/chruby/chruby.sh ]
 then

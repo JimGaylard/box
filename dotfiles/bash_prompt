@@ -25,7 +25,7 @@
 # Return the prompt symbol to use, colorized based on the return value of the
 # previous command.
 function set_prompt_symbol () {
-  if test $1 -eq 0 ; then
+  if test "$1" -eq 0 ; then
     PROMPT_SYMBOL=${GREEN}"^_^"${COLOR_NONE}
   else
     PROMPT_SYMBOL="${RED}0_o${COLOR_NONE}"
@@ -39,12 +39,10 @@ function set_bash_prompt () {
 
 
   # Set the bash prompt variable.
-  #PS1="${LIGHT_GRAY}\w${COLOR_NONE} ${YELLOW}($(parse_ruby_version))${COLOR_NONE}${AWS_ENV} ${PROMPT_SYMBOL} "
   read -r -d '' PROMPT_STRING <<-_EOF_
 ${DARK_GRAY}this is a blank line${COLOR_NONE}\n\
-${BLUE}\u@\h${COLOR_NONE} \
-${GRAY}\w${COLOR_NONE}\
-${GREEN}$(__git_ps1)${COLOR_NONE} \
+${BLUE}\u${COLOR_NONE} \
+${GRAY}\w${COLOR_NONE} \
 ${YELLOW}level:$SHLVL\n\
 ${PROMPT_SYMBOL}
 _EOF_
