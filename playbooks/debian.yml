@@ -1,0 +1,76 @@
+---
+- hosts: localhost
+  tasks:
+    - name: apt packages
+      become: yes
+      apt:
+        name:
+          - htop
+          - neovim
+          - strace
+          - silversearcher-ag
+    - name: bashrc
+      copy:
+        src: ../dotfiles/bashrc
+        dest: ~/.bashrc
+        force: yes
+    - name: bash_functions
+      copy:
+        src: ../dotfiles/bash_functions
+        dest: ~/.bash_functions
+        force: yes
+    - name: bash_profile
+      copy:
+        src: ../dotfiles/bash_profile
+        dest: ~/.bash_profile
+        force: yes
+    - name: bash_prompt
+      copy:
+        src: ../dotfiles/bash_prompt
+        dest: ~/.bash_prompt
+        force: yes
+    - name: gitignore_global
+      copy:
+        src: ../dotfiles/gitignore_global
+        dest: ~/.gitignore_global
+        force: yes
+    - name: pryrc
+      copy:
+        src: ../dotfiles/pryrc
+        dest: ~/.pryrc
+        force: yes
+    - name: tmux.conf
+      copy:
+        src: ../dotfiles/tmux.conf
+        dest: ~/.tmux.conf
+        force: yes
+    - name: nvim config directory
+      file:
+        path: ~/.config/nvim
+        state: directory
+        owner: jimg
+        group: jimg
+    - name: init.vim
+      copy:
+        src: ../dotfiles/vimrc
+        dest: ~/.config/nvim/init.vim
+        force: yes
+    - name: vimrc.bundles
+      copy:
+        src: ../dotfiles/vimrc.bundles
+        dest: ~/.config/nvim/vimrc.bundles
+        force: yes
+    - name: create nvim autoloads
+      file:
+        path: ~/.config/nvim/autoload
+        state: directory
+    - name: vim-plug
+      get_url:
+        url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        dest: ~/.config/nvim/autoload/plug.vim
+    - name: install vim plugins
+      command: vim +'PlugInstall --sync' +qa
+    - name: bash-my-aws
+      git:
+        repo: git@github.com:bash-my-universe/bash-my-aws.git
+        dest: ~/.bash-my-aws

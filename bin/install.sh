@@ -2,4 +2,4 @@
 
 set -eu
 
-ansible-playbook --ask-become-pass playbooks/main.yml
+ansible-playbook --ask-become-pass $1
