@@ -70,7 +70,7 @@
         dest: ~/.config/nvim/autoload/plug.vim
     - name: install vim plugins
       command: vim +'PlugInstall --sync' +qa
-    - name: bash-my-aws
-      git:
-        repo: git@github.com:bash-my-universe/bash-my-aws.git
-        dest: ~/.bash-my-aws
+        # - name: bash-my-aws
+        # git:
+        # repo: git@github.com:bash-my-universe/bash-my-aws.git
+        # dest: ~/.bash-my-aws
