@@ -15,6 +15,7 @@
         passphrase: "{{ ssh_passphrase }}"
         comment: "{{ ansible_user_id }}@{{ ansible_hostname }}"
         force: no
+      tags: [ssh]
     - name: dnf packages
       become: yes
       dnf:
@@ -31,6 +32,7 @@
           - snapd
           - strace
           - the_silver_searcher
+      tags: [packages]
     - name: snap symlink (for classic)
       become: yes
       file:
@@ -39,12 +41,14 @@
         owner: root
         group: root
         state: link
+      tags: [packages]
     - name: snap packages
       become: yes
       snap:
         name:
           - postman
           - spotify
+      tags: [packages]
     - name: snap install classic packages
       become: yes
       snap:
@@ -54,62 +58,76 @@
           - intellij-idea-community
           - slack
         classic: yes
+      tags: [packages]
     - name: bashrc
       copy:
         src: ../dotfiles/bashrc
         dest: ~/.bashrc
         force: yes
+      tags: [dotfiles]
     - name: bash_functions
       copy:
         src: ../dotfiles/bash_functions
         dest: ~/.bash_functions
         force: yes
+      tags: [dotfiles]
     - name: bash_profile
       copy:
         src: ../dotfiles/bash_profile
         dest: ~/.bash_profile
         force: yes
+      tags: [dotfiles]
     - name: bash_prompt
       copy:
         src: ../dotfiles/bash_prompt
         dest: ~/.bash_prompt
         force: yes
+      tags: [dotfiles]
     - name: gitignore_global
       copy:
         src: ../dotfiles/gitignore_global
         dest: ~/.gitignore_global
         force: yes
+      tags: [dotfiles]
     - name: pryrc
       copy:
         src: ../dotfiles/pryrc
         dest: ~/.pryrc
         force: yes
+      tags: [dotfiles]
     - name: tmux.conf
       copy:
         src: ../dotfiles/tmux.conf
         dest: ~/.tmux.conf
         force: yes
+      tags: [dotfiles]
     - name: init.vim
       copy:
         src: ../dotfiles/vimrc
         dest: ~/.config/nvim/init.vim
         force: yes
+      tags: [neovim, dotfiles]
     - name: vimrc.bundles
       copy:
         src: ../dotfiles/vimrc.bundles
         dest: ~/.config/nvim/vimrc.bundles
         force: yes
+      tags: [neovim, dotfiles]
     - name: create nvim autoloads
       file:
         path: ~/.config/nvim/autoload
         state: directory
+      tags: [neovim]
     - name: vim-plug
       get_url:
         url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         dest: ~/.config/nvim/autoload/plug.vim
+      tags: [neovim]
     - name: install vim plugins
       command: vim +'PlugInstall --sync' +qa
+      tags: [neovim]
     - name: bash-my-aws
       git:
         repo: git@github.com:bash-my-universe/bash-my-aws.git
         dest: ~/.bash-my-aws
+      tags: [dotfiles]
