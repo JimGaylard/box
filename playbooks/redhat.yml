@@ -26,6 +26,7 @@
           - gnome-shell-extension-no-topleft-hot-corner
           - gnome-tweaks
           - htop
+          - keychain
           - neovim
           - snapd
           - strace
