@@ -1,38 +1,38 @@
 ---
 - name: nvim config directory
   file:
-    path: ~/.config/nvim
+    path: "{{ ansible_user_dir }}/.config/nvim"
     state: directory
   tags: [neovim, dotfiles]
 
 - name: init.vim
   copy:
     src: "{{ playbook_dir }}/../dotfiles/vimrc"
-    dest: ~/.config/nvim/init.vim
+    dest: "{{ ansible_user_dir }}/.config/nvim/init.vim"
     force: yes
   tags: [neovim, dotfiles]
 
 - name: vimrc.bundles
   copy:
     src: "{{ playbook_dir }}/../dotfiles/vimrc.bundles"
-    dest: ~/.config/nvim/vimrc.bundles
+    dest: "{{ ansible_user_dir }}/.config/nvim/vimrc.bundles"
     force: yes
   tags: [neovim, dotfiles]
 
 - name: create nvim autoloads
   file:
-    path: ~/.config/nvim/autoload
+    path: "{{ ansible_user_dir }}/.config/nvim/autoload"
     state: directory
   tags: [neovim]
 
 - name: vim-plug
   get_url:
     url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    dest: ~/.config/nvim/autoload/plug.vim
+    dest: "{{ ansible_user_dir }}/.config/nvim/autoload/plug.vim"
   tags: [neovim]
 
 - name: install vim plugins
   command: nvim +'PlugInstall --sync' +qa
   args:
-    creates: ~/.config/nvim/plugged
+    creates: "{{ ansible_user_dir }}/.config/nvim/plugged"
   tags: [neovim]

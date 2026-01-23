@@ -8,7 +8,7 @@
   tasks:
     - name: Generate SSH key
       community.crypto.openssh_keypair:
-        path: ~/.ssh/id_ed25519
+        path: "{{ ansible_user_dir }}/.ssh/id_ed25519"
         type: ed25519
         passphrase: "{{ ssh_passphrase }}"
         comment: "{{ ansible_user_id }}@{{ ansible_hostname }}"

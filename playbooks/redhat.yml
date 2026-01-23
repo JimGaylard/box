@@ -10,7 +10,7 @@
   tasks:
     - name: Generate SSH key
       community.crypto.openssh_keypair:
-        path: ~/.ssh/id_ed25519
+        path: "{{ ansible_user_dir }}/.ssh/id_ed25519"
         type: ed25519
         passphrase: "{{ ssh_passphrase }}"
         comment: "{{ ansible_user_id }}@{{ ansible_hostname }}"
@@ -68,5 +68,5 @@
     - name: bash-my-aws
       git:
         repo: git@github.com:bash-my-universe/bash-my-aws.git
-        dest: ~/.bash-my-aws
+        dest: "{{ ansible_user_dir }}/.bash-my-aws"
       tags: [dotfiles]
