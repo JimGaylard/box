@@ -1,0 +1,49 @@
+---
+- name: bashrc
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bashrc"
+    dest: ~/.bashrc
+    force: yes
+  tags: [dotfiles]
+
+- name: bash_functions
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bash_functions"
+    dest: ~/.bash_functions
+    force: yes
+  tags: [dotfiles]
+
+- name: bash_profile
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bash_profile"
+    dest: ~/.bash_profile
+    force: yes
+  tags: [dotfiles]
+
+- name: bash_prompt
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bash_prompt"
+    dest: ~/.bash_prompt
+    force: yes
+  tags: [dotfiles]
+
+- name: gitignore_global
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/gitignore_global"
+    dest: ~/.gitignore_global
+    force: yes
+  tags: [dotfiles]
+
+- name: pryrc
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/pryrc"
+    dest: ~/.pryrc
+    force: yes
+  tags: [dotfiles]
+
+- name: tmux.conf
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/tmux.conf"
+    dest: ~/.tmux.conf
+    force: yes
+  tags: [dotfiles]
