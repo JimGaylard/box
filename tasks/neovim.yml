@@ -32,5 +32,7 @@
   tags: [neovim]
 
 - name: install vim plugins
-  command: vim +'PlugInstall --sync' +qa
+  command: nvim +'PlugInstall --sync' +qa
+  args:
+    creates: ~/.config/nvim/plugged
   tags: [neovim]
