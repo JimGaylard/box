@@ -1,18 +1,28 @@
 ---
 - hosts: localhost
-  vars_prompt:
-    - name: ssh_passphrase
-      prompt: "Enter passphrase for SSH key"
-      private: yes
-      confirm: yes
   tasks:
+    - name: Check if SSH key exists
+      stat:
+        path: "{{ ansible_facts['user_dir'] }}/.ssh/id_ed25519"
+      register: ssh_key_stat
+      tags: [ssh]
+
+    - name: Prompt for SSH passphrase if key is missing
+      pause:
+        prompt: "Enter passphrase for SSH key"
+        echo: no
+      register: ssh_passphrase_input
+      when: not ssh_key_stat.stat.exists
+      tags: [ssh]
+
     - name: Generate SSH key
       community.crypto.openssh_keypair:
         path: "{{ ansible_facts['user_dir'] }}/.ssh/id_ed25519"
         type: ed25519
-        passphrase: "{{ ssh_passphrase }}"
+        passphrase: "{{ ssh_passphrase_input.user_input | default('') }}"
         comment: "{{ ansible_facts['user_id'] }}@{{ ansible_facts['hostname'] }}"
         force: no
+      when: not ssh_key_stat.stat.exists
       tags: [ssh]
     - name: apt packages
       become: yes

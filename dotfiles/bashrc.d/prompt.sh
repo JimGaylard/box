@@ -61,6 +61,7 @@ function set_bash_prompt () {
       parsed_git="${parsed_git//\$/💾}"  # Stashed changes
       parsed_git="${parsed_git//</⬇️}"  # Behind upstream
       parsed_git="${parsed_git//>/⬆️}"  # Ahead of upstream
+      parsed_git="${parsed_git//=/}"   # Strip up-to-date indicator
 
       local branch="${parsed_git%% *}"
       local state="${parsed_git#* }"
