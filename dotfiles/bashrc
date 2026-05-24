@@ -4,6 +4,13 @@ export PATH=/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin:~/bin
 # OTHER PATH
 export PATH=$HOME/.local/bin:$PATH
 
+# Homebrew
+if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [ -d "/opt/homebrew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # Timezone
 export TZ=Australia/Melbourne
 

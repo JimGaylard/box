@@ -38,6 +38,10 @@
       include_tasks: ../tasks/dotfiles.yml
       tags: [dotfiles]
 
+    - name: Setup Homebrew
+      include_tasks: ../tasks/homebrew.yml
+      tags: [homebrew, dotfiles]
+
     - name: Setup neovim
       include_tasks: ../tasks/neovim.yml
       tags: [neovim, dotfiles]

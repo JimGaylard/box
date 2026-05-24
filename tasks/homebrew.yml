@@ -1,0 +1,49 @@
+---
+- name: Install Homebrew dependencies on Debian
+  become: yes
+  apt:
+    name:
+      - build-essential
+      - procps
+      - curl
+      - file
+      - git
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+  tags: [homebrew]
+
+- name: Install Homebrew dependencies on RedHat
+  become: yes
+  dnf:
+    name:
+      - gcc
+      - make
+      - procps-ng
+      - curl
+      - file
+      - git
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+  tags: [homebrew]
+
+- name: Create Homebrew directory with user ownership
+  become: yes
+  file:
+    path: /home/linuxbrew
+    state: directory
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
+    mode: '0755'
+  tags: [homebrew]
+
+- name: Check if Homebrew is installed
+  stat:
+    path: /home/linuxbrew/.linuxbrew/bin/brew
+  register: brew_stat
+  tags: [homebrew]
+
+- name: Install Homebrew
+  shell: |
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when: not brew_stat.stat.exists
+  tags: [homebrew]
