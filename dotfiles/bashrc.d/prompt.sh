@@ -47,10 +47,29 @@ function set_bash_prompt () {
     context="${CYAN}\u@\h${COLOR_NONE} "
   fi
 
-  # 4. Git Branch Info
+  # 4. Git Branch Info (Parsed to replace ASCII flags with beautiful emojis)
   local git_info=""
   if type __git_ps1 &>/dev/null; then
-    git_info=$(__git_ps1 " (${BLUE}%s${COLOR_NONE})")
+    local raw_git
+    raw_git=$(__git_ps1 "%s")
+    if [ -n "$raw_git" ]; then
+      local parsed_git="$raw_git"
+      # Replace ASCII symbols with modern emojis
+      parsed_git="${parsed_git//\*/⚡}"  # Unstaged / dirty changes
+      parsed_git="${parsed_git//+/📦}"  # Staged changes
+      parsed_git="${parsed_git//%/❓}"  # Untracked files
+      parsed_git="${parsed_git//\$/💾}"  # Stashed changes
+      parsed_git="${parsed_git//</⬇️}"  # Behind upstream
+      parsed_git="${parsed_git//>/⬆️}"  # Ahead of upstream
+
+      local branch="${parsed_git%% *}"
+      local state="${parsed_git#* }"
+      if [ "$branch" = "$state" ]; then
+        git_info=" (${BLUE}${branch}${COLOR_NONE})"
+      else
+        git_info=" (${BLUE}${branch}${COLOR_NONE} ${state})"
+      fi
+    fi
   fi
 
   # 5. Form prompt string
