@@ -21,7 +21,7 @@
       - libffi-dev
       - liblzma-dev
     state: present
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
   tags: [pyenv, packages]
 
 - name: Install pyenv build dependencies (RedHat)
@@ -42,19 +42,19 @@
       - libffi-devel
       - findutils
     state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
   tags: [pyenv, packages]
 
 - name: Clone pyenv repository
   git:
     repo: https://github.com/pyenv/pyenv.git
-    dest: "{{ ansible_user_dir }}/.pyenv"
+    dest: "{{ ansible_facts['user_dir'] }}/.pyenv"
   tags: [pyenv]
 
 - name: Deploy pyenv shell configuration
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/pyenv.sh"
-    dest: "{{ ansible_user_dir }}/.bashrc.d/pyenv.sh"
+    dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/pyenv.sh"
     force: yes
     mode: '0644'
   tags: [pyenv, dotfiles]

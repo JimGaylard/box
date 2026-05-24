@@ -1,72 +1,65 @@
 ---
+- name: Create bashrc.d directory
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.bashrc.d"
+    state: directory
+    mode: '0755'
+  tags: [dotfiles]
+
 - name: bashrc
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc"
-    dest: "{{ ansible_user_dir }}/.bashrc"
+    dest: "{{ ansible_facts['user_dir'] }}/.bashrc"
     force: yes
   tags: [dotfiles]
 
 - name: bash_functions
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bash_functions"
-    dest: "{{ ansible_user_dir }}/.bash_functions"
+    dest: "{{ ansible_facts['user_dir'] }}/.bash_functions"
     force: yes
   tags: [dotfiles]
 
 - name: bash_profile
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bash_profile"
-    dest: "{{ ansible_user_dir }}/.bash_profile"
+    dest: "{{ ansible_facts['user_dir'] }}/.bash_profile"
     force: yes
   tags: [dotfiles]
 
 - name: bash_prompt
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/prompt.sh"
-    dest: "{{ ansible_user_dir }}/.bashrc.d/prompt.sh"
+    dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/prompt.sh"
     force: yes
     mode: '0644'
   tags: [dotfiles]
 
 - name: remove legacy bash_prompt
   file:
-    path: "{{ ansible_user_dir }}/.bash_prompt"
+    path: "{{ ansible_facts['user_dir'] }}/.bash_prompt"
     state: absent
   tags: [dotfiles]
 
 - name: gitignore_global
   copy:
     src: "{{ playbook_dir }}/../dotfiles/gitignore_global"
-    dest: "{{ ansible_user_dir }}/.gitignore_global"
+    dest: "{{ ansible_facts['user_dir'] }}/.gitignore_global"
     force: yes
   tags: [dotfiles]
 
-- name: pryrc
-  copy:
-    src: "{{ playbook_dir }}/../dotfiles/pryrc"
-    dest: "{{ ansible_user_dir }}/.pryrc"
-    force: yes
-  tags: [dotfiles]
 
 - name: tmux.conf
   copy:
     src: "{{ playbook_dir }}/../dotfiles/tmux.conf"
-    dest: "{{ ansible_user_dir }}/.tmux.conf"
+    dest: "{{ ansible_facts['user_dir'] }}/.tmux.conf"
     force: yes
-  tags: [dotfiles]
-
-- name: Create bashrc.d directory
-  file:
-    path: "{{ ansible_user_dir }}/.bashrc.d"
-    state: directory
-    mode: '0755'
   tags: [dotfiles]
 
 - name: Deploy AWS shell configuration
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/aws.sh"
-    dest: "{{ ansible_user_dir }}/.bashrc.d/aws.sh"
+    dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/aws.sh"
     force: yes
     mode: '0644'
   tags: [dotfiles, aws]
-

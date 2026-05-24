@@ -2,14 +2,14 @@
 - name: Clone NVM repository
   git:
     repo: https://github.com/nvm-sh/nvm.git
-    dest: "{{ ansible_user_dir }}/.nvm"
+    dest: "{{ ansible_facts['user_dir'] }}/.nvm"
     version: v0.40.1
   tags: [nvm]
 
 - name: Deploy NVM shell configuration
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/nvm.sh"
-    dest: "{{ ansible_user_dir }}/.bashrc.d/nvm.sh"
+    dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/nvm.sh"
     force: yes
     mode: '0644'
   tags: [nvm, dotfiles]
