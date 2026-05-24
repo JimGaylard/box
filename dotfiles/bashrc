@@ -1,15 +1,22 @@
-export PATH=/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin:~/bin:~/.npm-global/bin:$PATH
-export TZ=Australia/Melbourne
+# SET $PATH
+export PATH=/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin:~/bin
 
+# GOPATH
 export GOPATH=$HOME/go
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$HOME/.local/bin
-export PATH=$PATH:$HOME/.rea-slip-utils/bin
+
+# NPM PATH
+export PATH=HOME/.npm-global/bin:$PATH
+
+# OTHER PATH
+export PATH=$HOME/.local/bin:$PATH
+
+# Timezone
+export TZ=Australia/Melbourne
 
 eval $(keychain --eval --agents ssh ~/.ssh/id_ed25519)
 
-export REA_LDAP_USER=jgaylard
 
 export AWS_REGION=ap-southeast-2
 export AWS_DEFAULT_REGION=ap-southeast-2
