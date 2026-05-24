@@ -1,48 +1,62 @@
-# Git prompt status configuration
-export GIT_PS1_SHOWDIRTYSTATE=1
+# Sourcing git prompt utility if available (standard paths)
+for f in /usr/lib/git-core/git-sh-prompt /etc/bash_completion.d/git-prompt /usr/share/git-core/git-prompt.sh; do
+  [ -r "$f" ] && source "$f"
+done
 
-# Colors for prompt
+# Limit path length to 3 levels
+export PROMPT_DIRTRIM=3
+
+# Git prompt settings
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWUPSTREAM="auto"
+
+# Colors
 RED="\[\033[0;31m\]"
 YELLOW="\[\033[0;33m\]"
 GREEN="\[\033[0;32m\]"
 BLUE="\[\033[0;34m\]"
-CYAN="\[\033[1;36m\]"
-MY_BLUE="\[\033[1;34m\]"
-LIGHT_RED="\[\033[1;31m\]"
+CYAN="\[\033[0;36m\]"
 DARK_GRAY="\[\033[1;30m\]"
-WHITE="\[\033[1;37m\]"
-LIGHT_GRAY="\[\033[0;36m\]"
-MY_RED="\[\033[0;31m\]"
 COLOR_NONE="\[\e[0m\]"
 
-# Return the prompt symbol to use, colorized based on the return value of the
-# previous command.
-function set_prompt_symbol () {
-  if test "$1" -eq 0 ; then
-    PROMPT_SYMBOL=${GREEN}"^_^"${COLOR_NONE}
-  else
-    PROMPT_SYMBOL="${RED}0_o${COLOR_NONE}"
-  fi
-}
+# Timer hooks
+function start_timer() { TIMER=${TIMER:-$SECONDS}; }
+trap 'start_timer' DEBUG
 
 function set_bash_prompt () {
-  # Set the PROMPT_SYMBOL variable. We do this first so we don't lose the
-  # return value of the last command.
-  set_prompt_symbol $?
+  local exit_code=$?
+  
+  # 1. Success/Failure symbol (Green checkmark for success, red cross with code for failure)
+  local symbol="${GREEN}✔${COLOR_NONE}"
+  if [ "$exit_code" -ne 0 ]; then
+    symbol="${RED}✘ (${exit_code})${COLOR_NONE}"
+  fi
 
-  # Set the bash prompt variable.
-  read -r -d '' PROMPT_STRING <<-_EOF_
-${DARK_GRAY}this is a blank line${COLOR_NONE}\n\
-${BLUE}\u${COLOR_NONE} \
-${GRAY}\w${COLOR_NONE} \
-${YELLOW}level:$SHLVL\n\
-${PROMPT_SYMBOL}
-_EOF_
+  # 2. Duration calculation
+  local duration=""
+  if [ -n "$TIMER" ]; then
+    local diff=$((SECONDS - TIMER))
+    [ $diff -gt 1 ] && duration="${YELLOW}(took ${diff}s)${COLOR_NONE} "
+  fi
+  unset TIMER
 
-  PS1="${PROMPT_STRING} "
+  # 3. Dynamic SSH Context
+  local context=""
+  if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    context="${CYAN}\u@\h${COLOR_NONE} "
+  fi
+
+  # 4. Git Branch Info
+  local git_info=""
+  if type __git_ps1 &>/dev/null; then
+    git_info=$(__git_ps1 " (${BLUE}%s${COLOR_NONE})")
+  fi
+
+  # 5. Form prompt string
+  PS1="\n${context}${BLUE}\w${COLOR_NONE}${git_info} ${duration}\n${symbol} "
 }
 
-# Tell bash to execute this function just before displaying its prompt.
 export PROMPT_COMMAND=set_bash_prompt
 
 # Append history appending to PROMPT_COMMAND
