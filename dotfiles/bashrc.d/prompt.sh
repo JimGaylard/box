@@ -18,7 +18,7 @@ GREEN="\[\033[0;32m\]"
 BLUE="\[\033[0;34m\]"
 CYAN="\[\033[0;36m\]"
 DARK_GRAY="\[\033[1;30m\]"
-COLOR_NONE="\[\e[0m\]"
+COLOR_NONE="\[\033[0m\]"
 
 # Timer hooks
 function start_timer() { TIMER=${TIMER:-$SECONDS}; }
@@ -27,10 +27,10 @@ trap 'start_timer' DEBUG
 function set_bash_prompt () {
   local exit_code=$?
   
-  # 1. Success/Failure symbol (Green checkmark for success, red cross with code for failure)
-  local symbol="${GREEN}✔${COLOR_NONE}"
+  # 1. Success/Failure symbol (Using text-safe checkmark and ballot X to prevent emoji override and spacing overlap)
+  local symbol="${GREEN}✓${COLOR_NONE}"
   if [ "$exit_code" -ne 0 ]; then
-    symbol="${RED}✘ (${exit_code})${COLOR_NONE}"
+    symbol="${RED}✗ (${exit_code})${COLOR_NONE}"
   fi
 
   # 2. Duration calculation
