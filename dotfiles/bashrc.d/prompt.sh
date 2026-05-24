@@ -26,11 +26,13 @@ trap 'start_timer' DEBUG
 
 function set_bash_prompt () {
   local exit_code=$?
+  local ex_code=""
   
   # 1. Success/Failure symbol (Using text-safe checkmark and ballot X to prevent emoji override and spacing overlap)
   local symbol="${GREEN}✓${COLOR_NONE}"
   if [ "$exit_code" -ne 0 ]; then
-    symbol="${RED}✗ (${exit_code})${COLOR_NONE}"
+    ex_code="${RED}exit code: ${exit_code}${COLOR_NONE}"
+    symbol="${RED}✗ "
   fi
 
   # 2. Duration calculation
@@ -74,7 +76,7 @@ function set_bash_prompt () {
   fi
 
   # 5. Form prompt string
-  PS1="\n${context}${BLUE}\w${COLOR_NONE}${git_info} ${duration}\n${symbol} "
+  PS1="\n${context}${BLUE}\w${COLOR_NONE}${git_info} ${duration} ${ex_code}\n${symbol}${COLOR_NONE} "
 }
 
 export PROMPT_COMMAND=set_bash_prompt
