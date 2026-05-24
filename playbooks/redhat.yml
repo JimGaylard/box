@@ -54,7 +54,6 @@
       snap:
         name:
           - code
-          - go
           - intellij-idea-community
           - slack
         classic: yes
@@ -70,3 +69,12 @@
         repo: git@github.com:bash-my-universe/bash-my-aws.git
         dest: "{{ ansible_user_dir }}/.bash-my-aws"
       tags: [dotfiles]
+
+    - name: Setup golang
+      include_tasks: ../tasks/golang.yml
+
+    - name: Setup nvm
+      include_tasks: ../tasks/nvm.yml
+
+    - name: Setup pyenv
+      include_tasks: ../tasks/pyenv.yml

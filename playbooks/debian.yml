@@ -29,3 +29,13 @@
 
     - name: Setup neovim
       include_tasks: ../tasks/neovim.yml
+
+    - name: Setup golang
+      include_tasks: ../tasks/golang.yml
+
+    - name: Setup nvm
+      include_tasks: ../tasks/nvm.yml
+
+    - name: Setup pyenv
+      include_tasks: ../tasks/pyenv.yml
+

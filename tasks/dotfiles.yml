@@ -22,9 +22,16 @@
 
 - name: bash_prompt
   copy:
-    src: "{{ playbook_dir }}/../dotfiles/bash_prompt"
-    dest: "{{ ansible_user_dir }}/.bash_prompt"
+    src: "{{ playbook_dir }}/../dotfiles/bashrc.d/prompt.sh"
+    dest: "{{ ansible_user_dir }}/.bashrc.d/prompt.sh"
     force: yes
+    mode: '0644'
+  tags: [dotfiles]
+
+- name: remove legacy bash_prompt
+  file:
+    path: "{{ ansible_user_dir }}/.bash_prompt"
+    state: absent
   tags: [dotfiles]
 
 - name: gitignore_global
@@ -47,3 +54,19 @@
     dest: "{{ ansible_user_dir }}/.tmux.conf"
     force: yes
   tags: [dotfiles]
+
+- name: Create bashrc.d directory
+  file:
+    path: "{{ ansible_user_dir }}/.bashrc.d"
+    state: directory
+    mode: '0755'
+  tags: [dotfiles]
+
+- name: Deploy AWS shell configuration
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bashrc.d/aws.sh"
+    dest: "{{ ansible_user_dir }}/.bashrc.d/aws.sh"
+    force: yes
+    mode: '0644'
+  tags: [dotfiles, aws]
+

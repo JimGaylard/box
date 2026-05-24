@@ -1,0 +1,24 @@
+---
+- name: Install Golang on RedHat (Snap)
+  become: yes
+  snap:
+    name: go
+    classic: yes
+  when: ansible_os_family == "RedHat"
+  tags: [golang]
+
+- name: Install Golang on Debian (Apt)
+  become: yes
+  apt:
+    name: golang-go
+    state: present
+  when: ansible_os_family == "Debian"
+  tags: [golang]
+
+- name: Deploy Golang shell configuration
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bashrc.d/go.sh"
+    dest: "{{ ansible_user_dir }}/.bashrc.d/go.sh"
+    force: yes
+    mode: '0644'
+  tags: [golang, dotfiles]

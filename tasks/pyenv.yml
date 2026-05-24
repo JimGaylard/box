@@ -1,0 +1,60 @@
+---
+- name: Install pyenv build dependencies (Debian)
+  become: yes
+  apt:
+    name:
+      - make
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - llvm
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libxml2-dev
+      - libxmlsec1-dev
+      - libffi-dev
+      - liblzma-dev
+    state: present
+  when: ansible_os_family == "Debian"
+  tags: [pyenv, packages]
+
+- name: Install pyenv build dependencies (RedHat)
+  become: yes
+  dnf:
+    name:
+      - make
+      - gcc
+      - zlib-devel
+      - bzip2
+      - bzip2-devel
+      - readline-devel
+      - sqlite
+      - sqlite-devel
+      - openssl-devel
+      - xz
+      - xz-devel
+      - libffi-devel
+      - findutils
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags: [pyenv, packages]
+
+- name: Clone pyenv repository
+  git:
+    repo: https://github.com/pyenv/pyenv.git
+    dest: "{{ ansible_user_dir }}/.pyenv"
+  tags: [pyenv]
+
+- name: Deploy pyenv shell configuration
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/bashrc.d/pyenv.sh"
+    dest: "{{ ansible_user_dir }}/.bashrc.d/pyenv.sh"
+    force: yes
+    mode: '0644'
+  tags: [pyenv, dotfiles]
