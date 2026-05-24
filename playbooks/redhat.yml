@@ -60,9 +60,11 @@
       tags: [packages]
     - name: Deploy dotfiles
       include_tasks: ../tasks/dotfiles.yml
+      tags: [dotfiles]
 
     - name: Setup neovim
       include_tasks: ../tasks/neovim.yml
+      tags: [neovim, dotfiles]
 
     - name: bash-my-aws
       git:
@@ -72,9 +74,16 @@
 
     - name: Setup golang
       include_tasks: ../tasks/golang.yml
+      tags: [golang, dotfiles]
 
     - name: Setup nvm
       include_tasks: ../tasks/nvm.yml
+      tags: [nvm, dotfiles]
 
     - name: Setup pyenv
       include_tasks: ../tasks/pyenv.yml
+      tags: [pyenv, dotfiles]
+
+    - name: Setup rust
+      include_tasks: ../tasks/rust.yml
+      tags: [rust, dotfiles]
