@@ -1,4 +1,6 @@
 # Go environment settings
 export GOPATH=$HOME/go
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:$GOPATH/bin
+if [ -z "$__PATH_INITIALIZED" ]; then
+  export PATH=/usr/local/go/bin:$PATH
+  export PATH=$GOPATH/bin:$PATH
+fi

@@ -1,2 +1,4 @@
 # Rust / Cargo environment settings
-export PATH="$HOME/.cargo/bin:$PATH"
+if [ -z "$__PATH_INITIALIZED" ]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
