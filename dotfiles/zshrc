@@ -45,6 +45,7 @@ export __PATH_INITIALIZED=1
 
 # Set environment and aliases
 bindkey -v
+bindkey '^R' history-incremental-search-backward
 
 # Zsh History configuration
 export HISTFILE="$HOME/.zsh_history"
