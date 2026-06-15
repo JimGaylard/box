@@ -10,6 +10,8 @@ if [ -z "$__PATH_INITIALIZED" ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
   elif [ -d "/opt/homebrew" ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
   fi
 fi
 
@@ -30,8 +32,8 @@ export __PATH_INITIALIZED=1
 
 # source other bash files
 ################################################
-# shellcheck source=/home/jgaylard/.bash_functions
-[ -e ~/.bash_functions ] && source ~/.bash_functions
+# shellcheck source=/home/jgaylard/.shell_functions
+[ -e ~/.shell_functions ] && source ~/.shell_functions
 
 
 

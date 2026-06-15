@@ -12,10 +12,19 @@
     creates: "{{ ansible_facts['user_dir'] }}/.cargo/bin/rustc"
   tags: [rust]
 
-- name: Deploy Rust shell configuration
+- name: Deploy Rust shell configuration (Bash)
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/rust.sh"
     dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/rust.sh"
     force: yes
     mode: '0644'
+  tags: [rust, dotfiles]
+
+- name: Deploy Rust shell configuration (Zsh)
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/rust.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/rust.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
   tags: [rust, dotfiles]

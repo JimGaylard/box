@@ -1,0 +1,81 @@
+# SET $PATH
+if [ -z "$__PATH_INITIALIZED" ]; then
+  export PATH=/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin:~/bin:$PATH
+  export PATH=$HOME/.local/bin:$PATH
+
+  # Homebrew
+  if [ -d "/opt/homebrew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -d "/home/linuxbrew/.linuxbrew" ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
+
+# Timezone
+export TZ=Australia/Melbourne
+
+# SSH Keychain
+if command -v keychain &>/dev/null; then
+  eval $(keychain --eval --agents ssh ~/.ssh/id_ed25519)
+fi
+
+# Initialize completions
+if [ -d "/opt/homebrew/share/zsh/site-functions" ]; then
+  fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+elif [ -d "/home/linuxbrew/.linuxbrew/share/zsh/site-functions" ]; then
+  fpath=(/home/linuxbrew/.linuxbrew/share/zsh/site-functions $fpath)
+fi
+
+autoload -Uz compinit && compinit
+
+# Source modular configurations from ~/.zshrc.d
+if [ -d "$HOME/.zshrc.d" ]; then
+  for file in "$HOME"/.zshrc.d/*.zsh; do
+    [ -r "$file" ] && source "$file"
+  done
+  unset file
+fi
+
+export __PATH_INITIALIZED=1
+
+# Source shell functions
+[ -e ~/.shell_functions ] && source ~/.shell_functions
+
+# Set environment and aliases
+bindkey -v
+
+# Zsh History configuration
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=10000
+export SAVEHIST=10000
+setopt APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+
+# Load Zsh Plugins (Homebrew paths)
+if [ -d "/opt/homebrew/share" ]; then
+  [ -f "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  [ -f "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [ -d "/usr/local/share" ]; then
+  [ -f "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && source "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  [ -f "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
+
+
+
+# Clean up duplicate paths using Zsh native array attributes
+typeset -U path
+
+alias ty='tmux loadb -'
+alias gst='git status -s'
+alias gstt='git status'
+alias gd='git diff'
+alias gpg=gpg2
+
+# Auto-start tmux if not nested and not in VS Code terminal
+if [ -z "$TMUX" ] && [ "$TERM_PROGRAM" != "vscode" ] && command -v tmux &>/dev/null; then
+  tmux
+fi

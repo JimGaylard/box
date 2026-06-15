@@ -94,9 +94,9 @@
       include_tasks: ../tasks/nvm.yml
       tags: [nvm, dotfiles]
 
-    - name: Setup pyenv
-      include_tasks: ../tasks/pyenv.yml
-      tags: [pyenv, dotfiles]
+    - name: Setup uv
+      include_tasks: ../tasks/uv.yml
+      tags: [uv, dotfiles]
 
     - name: Setup rust
       include_tasks: ../tasks/rust.yml

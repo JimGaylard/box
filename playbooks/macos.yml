@@ -24,23 +24,37 @@
         force: no
       when: not ssh_key_stat.stat.exists
       tags: [ssh]
-    - name: apt packages
-      become: yes
-      apt:
-        name:
-          - htop
-          - keychain
-          - neovim
-          - strace
-          - silversearcher-ag
-      tags: [packages]
-    - name: Deploy dotfiles
-      include_tasks: ../tasks/dotfiles.yml
-      tags: [dotfiles]
 
     - name: Setup Homebrew
       include_tasks: ../tasks/homebrew.yml
       tags: [homebrew, dotfiles]
+
+    - name: Install Homebrew packages
+      community.general.homebrew:
+        name:
+          - git
+          - htop
+          - neovim
+          - starship
+          - the_silver_searcher
+          - tmux
+          - zsh-autosuggestions
+          - zsh-syntax-highlighting
+        state: present
+      tags: [packages]
+
+    - name: Install Homebrew casks
+      community.general.homebrew_cask:
+        name:
+          - antigravity-cli
+          - claude-code
+          - font-powerline-symbols
+        state: present
+      tags: [packages, casks]
+
+    - name: Deploy dotfiles
+      include_tasks: ../tasks/dotfiles.yml
+      tags: [dotfiles]
 
     - name: Setup neovim
       include_tasks: ../tasks/neovim.yml
@@ -61,4 +75,3 @@
     - name: Setup rust
       include_tasks: ../tasks/rust.yml
       tags: [rust, dotfiles]
-

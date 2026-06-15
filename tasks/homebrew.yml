@@ -34,16 +34,19 @@
     owner: "{{ ansible_facts['user_id'] }}"
     group: "{{ ansible_facts['user_id'] }}"
     mode: '0755'
+  when: ansible_facts['os_family'] != "Darwin"
   tags: [homebrew]
 
 - name: Check if Homebrew is installed
-  stat:
-    path: /home/linuxbrew/.linuxbrew/bin/brew
-  register: brew_stat
+  shell: |
+    command -v brew || test -f /opt/homebrew/bin/brew || test -f /usr/local/bin/brew || test -f /home/linuxbrew/.linuxbrew/bin/brew
+  register: brew_check
+  failed_when: false
+  changed_when: false
   tags: [homebrew]
 
 - name: Install Homebrew
   shell: |
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  when: not brew_stat.stat.exists
+  when: brew_check.rc != 0
   tags: [homebrew]

@@ -6,6 +6,14 @@
     mode: '0755'
   tags: [dotfiles]
 
+- name: Create zshrc.d directory
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.zshrc.d"
+    state: directory
+    mode: '0755'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
 - name: bashrc
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc"
@@ -13,11 +21,25 @@
     force: yes
   tags: [dotfiles]
 
-- name: bash_functions
+- name: zshrc
   copy:
-    src: "{{ playbook_dir }}/../dotfiles/bash_functions"
-    dest: "{{ ansible_facts['user_dir'] }}/.bash_functions"
+    src: "{{ playbook_dir }}/../dotfiles/zshrc"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc"
     force: yes
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
+- name: shell_functions
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/shell_functions"
+    dest: "{{ ansible_facts['user_dir'] }}/.shell_functions"
+    force: yes
+  tags: [dotfiles]
+
+- name: remove legacy bash_functions
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.bash_functions"
+    state: absent
   tags: [dotfiles]
 
 - name: bash_profile
@@ -35,10 +57,36 @@
     mode: '0644'
   tags: [dotfiles]
 
+- name: zsh_prompt
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/prompt.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/prompt.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
 - name: remove legacy bash_prompt
   file:
     path: "{{ ansible_facts['user_dir'] }}/.bash_prompt"
     state: absent
+  tags: [dotfiles]
+
+- name: Create .config directory
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.config"
+    state: directory
+    mode: '0755'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
+- name: starship.toml
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/starship.toml"
+    dest: "{{ ansible_facts['user_dir'] }}/.config/starship.toml"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles]
 
 - name: gitignore_global
@@ -48,7 +96,6 @@
     force: yes
   tags: [dotfiles]
 
-
 - name: tmux.conf
   copy:
     src: "{{ playbook_dir }}/../dotfiles/tmux.conf"
@@ -56,10 +103,19 @@
     force: yes
   tags: [dotfiles]
 
-- name: Deploy AWS shell configuration
+- name: Deploy AWS shell configuration (Bash)
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/aws.sh"
     dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/aws.sh"
     force: yes
     mode: '0644'
+  tags: [dotfiles, aws]
+
+- name: Deploy AWS shell configuration (Zsh)
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/aws.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/aws.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles, aws]

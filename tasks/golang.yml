@@ -15,10 +15,27 @@
   when: ansible_facts['os_family'] == "Debian"
   tags: [golang]
 
-- name: Deploy Golang shell configuration
+- name: Install Golang on Darwin (Homebrew)
+  community.general.homebrew:
+    name: go
+    state: present
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [golang]
+
+- name: Deploy Golang shell configuration (Bash)
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/go.sh"
     dest: "{{ ansible_facts['user_dir'] }}/.bashrc.d/go.sh"
     force: yes
     mode: '0644'
   tags: [golang, dotfiles]
+
+- name: Deploy Golang shell configuration (Zsh)
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/go.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/go.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [golang, dotfiles]
+
