@@ -55,6 +55,10 @@
                                   " Things like vim-gitgutter will match LineNr highlight
   highlight clear CursorLineNr   " Remove highlight color from current line number
 
+  " Make statusline transparent to match terminal background
+  highlight StatusLine ctermbg=NONE ctermfg=250 guibg=NONE guifg=#bcbcbc cterm=NONE gui=NONE
+  highlight StatusLineNC ctermbg=NONE ctermfg=244 guibg=NONE guifg=#808080 cterm=NONE gui=NONE
+
   set colorcolumn=80
   set colorcolumn=+1
 
@@ -68,13 +72,8 @@
   if has('statusline')
     set laststatus=2
 
-    " Broken down into easily includeable segments
-    "set statusline= %h%w%m%r%{SL('CapsLockStatusline')}%y%{SL('fugitive#statusline')}%#ErrorMsg#%{SL('SyntasticStatuslineFlag')}%*%=%-14.(%l,%c%V%)\ %P
-    set statusline=%{fugitive#statusline()} " Git Hotness
-    set statusline+=\ %<%.55F\                     " Filename
-    set statusline+=%w%h%m%r%q                 " Options
-    set statusline+=%=%y\ %(%l,%c%V%)\ %p%%  " Right aligned file nav info
-
+    " Minimal statusline with powerline separators (blends into editor background)
+    let &statusline = " %{exists('*FugitiveHead')&&!empty(FugitiveHead())?' '.FugitiveHead().'  ':''}%<%.55F %m%r%w%= %y  %l:%c  %p%% "
   endif
 
   set backspace=indent,eol,start  " Backspace for dummies
