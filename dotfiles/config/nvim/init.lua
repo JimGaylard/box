@@ -1,3 +1,6 @@
+-- Set mapleader before loading lazy.nvim
+vim.g.mapleader = ","
+
 -- bootstrap lazy.nvim and load plugins
 require("config.lazy")
 

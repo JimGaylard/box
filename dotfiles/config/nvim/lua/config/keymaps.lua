@@ -1,6 +1,3 @@
--- Leader mapping
-vim.g.mapleader = ","
-
 local keymap = vim.keymap.set
 
 -- Edit vimrc shortcut
