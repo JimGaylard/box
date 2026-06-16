@@ -19,19 +19,20 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = { "williamboman/mason-lspconfig.nvim" },
     config = function()
-      local lspconfig = require("lspconfig")
-      
-      -- Helper function to map keys when LSP attaches to buffer
-      local on_attach = function(client, bufnr)
-        local opts = { buffer = bufnr, silent = true }
-        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-      end
+      -- Helper function to map keys when LSP attaches to a buffer (compatible with 0.8+)
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local bufnr = args.buf
+          local opts = { buffer = bufnr, silent = true }
+          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+          vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+        end,
+      })
 
       -- Configure capabilities for autocomplete support
       local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -43,10 +44,21 @@ return {
       -- Setup standard language servers
       local servers = { "ts_ls", "gopls", "pyright", "lua_ls" }
       for _, lsp in ipairs(servers) do
-        lspconfig[lsp].setup({
-          on_attach = on_attach,
-          capabilities = capabilities,
-        })
+        if vim.lsp.config then
+          -- Neovim 0.11+ API
+          vim.lsp.config(lsp, {
+            capabilities = capabilities,
+          })
+          vim.lsp.enable(lsp)
+        else
+          -- Fallback for Neovim < 0.11
+          local has_lspconfig, lspconfig = pcall(require, "lspconfig")
+          if has_lspconfig then
+            lspconfig[lsp].setup({
+              capabilities = capabilities,
+            })
+          end
+        end
       end
     end,
   }
