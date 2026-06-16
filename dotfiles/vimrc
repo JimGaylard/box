@@ -219,23 +219,29 @@
     " Modern Lua Plugins Config {
       if has('nvim')
         lua << EOF
-        require('telescope').setup{
-          defaults = {
-            mappings = {
-              i = {
-                ["<C-j>"] = "move_selection_next",
-                ["<C-k>"] = "move_selection_previous",
+        local has_telescope, telescope = pcall(require, 'telescope')
+        if has_telescope then
+          telescope.setup{
+            defaults = {
+              mappings = {
+                i = {
+                  ["<C-j>"] = "move_selection_next",
+                  ["<C-k>"] = "move_selection_previous",
+                }
               }
             }
           }
-        }
+        end
 
-        require('nvim-treesitter.configs').setup {
-          ensure_installed = { "javascript", "markdown", "html", "css", "dockerfile", "bash", "lua" },
-          highlight = {
-            enable = true,
-          },
-        }
+        local has_treesitter, treesitter_configs = pcall(require, 'nvim-treesitter.configs')
+        if has_treesitter then
+          treesitter_configs.setup {
+            ensure_installed = { "javascript", "markdown", "html", "css", "dockerfile", "bash", "lua" },
+            highlight = {
+              enable = true,
+            },
+          }
+        end
 EOF
       endif
     " }
