@@ -59,6 +59,10 @@
   highlight StatusLine ctermbg=NONE ctermfg=250 guibg=NONE guifg=#bcbcbc cterm=NONE gui=NONE
   highlight StatusLineNC ctermbg=NONE ctermfg=244 guibg=NONE guifg=#808080 cterm=NONE gui=NONE
 
+  " Make main editor background transparent to match terminal background
+  highlight Normal ctermbg=NONE guibg=NONE
+  highlight NonText ctermbg=NONE guibg=NONE
+
   set colorcolumn=80
   set colorcolumn=+1
 
