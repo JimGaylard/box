@@ -10,59 +10,61 @@ return {
       "saadparwaiz1/cmp_luasnip",
     },
     config = function()
-      local cmp = require("cmp")
-      local luasnip = require("luasnip")
+      local has_cmp, cmp = pcall(require, "cmp")
+      local has_luasnip, luasnip = pcall(require, "luasnip")
 
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
-        },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<C-e>"] = cmp.mapping.abort(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept selected item
-          -- Tab/S-Tab behavior for moving through list
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-        }),
-        sources = cmp.config.sources({
-          { name = "nvim-lsp" },
-          { name = "luasnip" },
-          { name = "path" },
-        }, {
-          { name = "buffer" },
-        }),
-      })
+      if has_cmp and has_luasnip then
+        cmp.setup({
+          snippet = {
+            expand = function(args)
+              luasnip.lsp_expand(args.body)
+            end,
+          },
+          mapping = cmp.mapping.preset.insert({
+            ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+            ["<C-f>"] = cmp.mapping.scroll_docs(4),
+            ["<C-Space>"] = cmp.mapping.complete(),
+            ["<C-e>"] = cmp.mapping.abort(),
+            ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept selected item
+            -- Tab/S-Tab behavior for moving through list
+            ["<Tab>"] = cmp.mapping(function(fallback)
+              if cmp.visible() then
+                cmp.select_next_item()
+              elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+              else
+                fallback()
+              end
+            end, { "i", "s" }),
+            ["<S-Tab>"] = cmp.mapping(function(fallback)
+              if cmp.visible() then
+                cmp.select_prev_style()
+              elseif luasnip.jumpable(-1) then
+                luasnip.jump(-1)
+              else
+                fallback()
+              end
+            end, { "i", "s" }),
+          }),
+          sources = cmp.config.sources({
+            { name = "nvim-lsp" },
+            { name = "luasnip" },
+            { name = "path" },
+          }, {
+            { name = "buffer" },
+          }),
+        })
 
-      -- Cmdline autocomplete setup
-      cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = "path" },
-        }, {
-          { name = "cmdline" },
-        }),
-      })
+        -- Cmdline autocomplete setup
+        cmp.setup.cmdline(":", {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = cmp.config.sources({
+            { name = "path" },
+          }, {
+            { name = "cmdline" },
+          }),
+        })
+      end
     end,
   }
 }

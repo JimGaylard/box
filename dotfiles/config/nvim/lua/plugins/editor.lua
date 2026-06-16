@@ -4,17 +4,20 @@ return {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      local actions = require("telescope.actions")
-      require("telescope").setup({
-        defaults = {
-          mappings = {
-            i = {
-              ["<C-j>"] = actions.move_selection_next,
-              ["<C-k>"] = actions.move_selection_previous,
+      local has_actions, actions = pcall(require, "telescope.actions")
+      local has_telescope, telescope = pcall(require, "telescope")
+      if has_actions and has_telescope then
+        telescope.setup({
+          defaults = {
+            mappings = {
+              i = {
+                ["<C-j>"] = actions.move_selection_next,
+                ["<C-k>"] = actions.move_selection_previous,
+              },
             },
           },
-        },
-      })
+        })
+      end
     end,
   },
 
@@ -22,7 +25,10 @@ return {
   {
     "lewis6991/gitsigns.nvim",
     config = function()
-      require("gitsigns").setup()
+      local has_gitsigns, gitsigns = pcall(require, "gitsigns")
+      if has_gitsigns then
+        gitsigns.setup()
+      end
     end,
   },
 
@@ -35,7 +41,10 @@ return {
       vim.o.timeoutlen = 300
     end,
     config = function()
-      require("which-key").setup()
+      local has_wk, wk = pcall(require, "which-key")
+      if has_wk then
+        wk.setup()
+      end
     end,
   },
 

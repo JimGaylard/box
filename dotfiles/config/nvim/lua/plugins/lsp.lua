@@ -2,17 +2,23 @@ return {
   {
     "williamboman/mason.nvim",
     config = function()
-      require("mason").setup()
+      local has_mason, mason = pcall(require, "mason")
+      if has_mason then
+        mason.setup()
+      end
     end,
   },
   {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
     config = function()
-      require("mason-lspconfig").setup({
-        -- Auto-install basic servers for your languages
-        ensure_installed = { "ts_ls", "gopls", "pyright", "lua_ls" },
-      })
+      local has_mlsp, mlsp = pcall(require, "mason-lspconfig")
+      if has_mlsp then
+        mlsp.setup({
+          -- Auto-install basic servers for your languages
+          ensure_installed = { "ts_ls", "gopls", "pyright", "lua_ls" },
+        })
+      end
     end,
   },
   {
