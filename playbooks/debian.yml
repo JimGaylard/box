@@ -29,6 +29,7 @@
       apt:
         name:
           - htop
+          - jq
           - keychain
           - neovim
           - strace
