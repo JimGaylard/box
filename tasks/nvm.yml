@@ -6,6 +6,17 @@
     version: v0.40.1
   tags: [nvm]
 
+- name: Install latest LTS Node via nvm and set as default
+  shell: |
+    export NVM_DIR="{{ ansible_facts['user_dir'] }}/.nvm"
+    . "$NVM_DIR/nvm.sh"
+    nvm install --lts
+    nvm alias default 'lts/*'
+  args:
+    executable: /bin/bash
+    creates: "{{ ansible_facts['user_dir'] }}/.nvm/alias/default"
+  tags: [nvm]
+
 - name: Deploy NVM shell configuration (Bash)
   copy:
     src: "{{ playbook_dir }}/../dotfiles/bashrc.d/nvm.sh"
