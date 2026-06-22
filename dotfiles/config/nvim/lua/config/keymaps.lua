@@ -21,9 +21,6 @@ keymap("n", "/", "/\\v")
 -- Toggle search highlight
 keymap("n", "<leader>/", ':let @/ = ""<CR>', { silent = true })
 
--- Format / Strip trailing whitespace manually
-keymap("n", "<leader>w", "mp:%s/\\s\\+$/<CR>'p")
-
 -- File info copy mappings
 keymap("n", ",cf", ':let @*=expand("%")<CR>')
 keymap("n", ",cp", ':let @*=expand("%:p")<CR>')

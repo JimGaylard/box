@@ -13,6 +13,10 @@ opt.hidden = true
 opt.lazyredraw = true
 opt.linebreak = true
 
+-- Hybrid line numbers: absolute on the cursor line, relative elsewhere
+opt.number = true
+opt.relativenumber = true
+
 opt.backspace = { "indent", "eol", "start" }
 opt.linespace = 0
 opt.showmatch = true
@@ -76,7 +80,8 @@ autocmd("FileType", {
   group = custom_group,
 })
 
--- Strip trailing whitespace on save
+-- Strip trailing whitespace on save, only for filetypes conform doesn't format
+-- (conform's format-on-save already handles go/js/py/yaml/etc.)
 local function strip_trailing_whitespace()
   local view = vim.fn.winsaveview()
   vim.cmd([[%s/\s\+$//e]])
@@ -84,7 +89,7 @@ local function strip_trailing_whitespace()
 end
 
 autocmd("BufWritePre", {
-  pattern = { "*.c", "*.cpp", "*.java", "*.go", "*.php", "*.js", "*.rb", "*.hs", "*.py", "*.twig", "*.xml", "*.yml", "*.yaml" },
+  pattern = { "*.c", "*.cpp", "*.java", "*.php", "*.rb", "*.hs", "*.twig", "*.xml" },
   callback = strip_trailing_whitespace,
   group = custom_group,
 })
