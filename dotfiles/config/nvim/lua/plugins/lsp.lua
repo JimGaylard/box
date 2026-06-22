@@ -1,5 +1,16 @@
 return {
   {
+    -- Teaches lua_ls the full Neovim API (fixes "Undefined global vim",
+    -- adds completion for vim.* and plugin modules)
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+  {
     "williamboman/mason.nvim",
     config = function()
       local has_mason, mason = pcall(require, "mason")

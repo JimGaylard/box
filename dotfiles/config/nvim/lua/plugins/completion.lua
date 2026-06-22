@@ -38,7 +38,7 @@ return {
             end, { "i", "s" }),
             ["<S-Tab>"] = cmp.mapping(function(fallback)
               if cmp.visible() then
-                cmp.select_prev_style()
+                cmp.select_prev_item()
               elseif luasnip.jumpable(-1) then
                 luasnip.jump(-1)
               else
@@ -47,7 +47,8 @@ return {
             end, { "i", "s" }),
           }),
           sources = cmp.config.sources({
-            { name = "nvim-lsp" },
+            { name = "lazydev", group_index = 0 }, -- Neovim API completion in lua files
+            { name = "nvim_lsp" },
             { name = "luasnip" },
             { name = "path" },
           }, {
