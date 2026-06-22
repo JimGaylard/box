@@ -4,7 +4,7 @@
 
 # Font: match the Nerd Font installed via the macos playbook so icons/powerline glyphs render
 font-family = MesloLGS Nerd Font
-font-size = 14
+font-size = 12
 
 # Theme (run `ghostty +list-themes` to browse alternatives)
 theme = Catppuccin Mocha
