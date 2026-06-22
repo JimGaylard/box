@@ -10,14 +10,11 @@ if ! ansible-galaxy collection list 2>/dev/null | grep -q 'community.general'; t
   ansible-galaxy collection install community.general
 fi
 
-# Retrieve sudo password from macOS keychain if on macOS and unset
-if [ -z "${ANSIBLE_BECOME_PASS:-}" ] && [ "$(uname)" = "Darwin" ]; then
-  if security find-generic-password -s "sudo" -a "$USER" -w &>/dev/null; then
-    export ANSIBLE_BECOME_PASS=$(security find-generic-password -s "sudo" -a "$USER" -w)
-  fi
-fi
-
-if [ -n "${ANSIBLE_BECOME_PASS:-}" ]; then
+# The macOS playbook installs everything via Homebrew and has no
+# become/sudo tasks, so never prompt for a become password on Darwin.
+if [ "$(uname)" = "Darwin" ]; then
+  ansible-playbook "$@"
+elif [ -n "${ANSIBLE_BECOME_PASS:-}" ]; then
   ansible-playbook "$@"
 else
   ansible-playbook --ask-become-pass "$@"
