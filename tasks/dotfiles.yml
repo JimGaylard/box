@@ -89,6 +89,14 @@
   when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles]
 
+- name: deploy ghostty config directory
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/config/ghostty/"
+    dest: "{{ ansible_facts['user_dir'] }}/.config/ghostty/"
+    force: yes
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
 - name: gitignore_global
   copy:
     src: "{{ playbook_dir }}/../dotfiles/gitignore_global"
