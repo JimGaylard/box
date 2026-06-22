@@ -32,6 +32,7 @@
     - name: Install Homebrew packages
       community.general.homebrew:
         name:
+          - gh
           - git
           - htop
           - jq
