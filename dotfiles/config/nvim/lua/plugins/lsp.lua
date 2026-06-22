@@ -31,10 +31,11 @@ return {
         mti.setup({
           ensure_installed = {
             "stylua",
-            "prettierd",
             "shfmt",
             "ruff",
             "black",
+            -- prettierd is installed globally via npm (mason can't see nvm's npm
+            -- on PATH); install with: npm install -g @fsouza/prettierd
           },
         })
       end
