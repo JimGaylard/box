@@ -22,6 +22,25 @@ return {
     end,
   },
   {
+    -- Auto-install formatters/linters used by conform.nvim via Mason
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "williamboman/mason.nvim" },
+    config = function()
+      local has_mti, mti = pcall(require, "mason-tool-installer")
+      if has_mti then
+        mti.setup({
+          ensure_installed = {
+            "stylua",
+            "prettierd",
+            "shfmt",
+            "ruff",
+            "black",
+          },
+        })
+      end
+    end,
+  },
+  {
     "neovim/nvim-lspconfig",
     dependencies = { "williamboman/mason-lspconfig.nvim" },
     config = function()

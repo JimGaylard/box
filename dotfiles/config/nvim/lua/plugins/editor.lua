@@ -2,7 +2,12 @@ return {
   -- Telescope Fuzzy Finder
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      -- Native C sorter for much faster fuzzy matching
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
     config = function()
       local has_actions, actions = pcall(require, "telescope.actions")
       local has_telescope, telescope = pcall(require, "telescope")
@@ -17,6 +22,8 @@ return {
             },
           },
         })
+        -- Load fzf-native if it's available
+        pcall(telescope.load_extension, "fzf")
       end
     end,
   },
