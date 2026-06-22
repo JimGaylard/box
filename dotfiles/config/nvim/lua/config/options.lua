@@ -13,9 +13,9 @@ opt.hidden = true
 opt.lazyredraw = true
 opt.linebreak = true
 
--- Hybrid line numbers: absolute on the cursor line, relative elsewhere
-opt.number = true
-opt.relativenumber = true
+-- Line numbers off by default; toggle hybrid numbers with <leader>n
+opt.number = false
+opt.relativenumber = false
 
 opt.backspace = { "indent", "eol", "start" }
 opt.linespace = 0

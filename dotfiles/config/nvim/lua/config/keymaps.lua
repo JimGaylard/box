@@ -21,6 +21,13 @@ keymap("n", "/", "/\\v")
 -- Toggle search highlight
 keymap("n", "<leader>/", ':let @/ = ""<CR>', { silent = true })
 
+-- Toggle hybrid line numbers on/off
+keymap("n", "<leader>n", function()
+  local on = not vim.wo.number
+  vim.wo.number = on
+  vim.wo.relativenumber = on
+end, { desc = "Toggle line numbers" })
+
 -- File info copy mappings
 keymap("n", ",cf", ':let @*=expand("%")<CR>')
 keymap("n", ",cp", ':let @*=expand("%:p")<CR>')
