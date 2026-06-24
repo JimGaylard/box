@@ -48,6 +48,7 @@
     - name: Install Homebrew casks
       community.general.homebrew_cask:
         name:
+          - 1password-cli
           - antigravity-cli
           - claude-code
           - font-meslo-lg-nerd-font
