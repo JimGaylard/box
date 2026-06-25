@@ -59,7 +59,7 @@
           - keychain
           - neovim
           - strace
-          - silversearcher-ag
+          - ripgrep
       tags: [packages]
     - name: Deploy dotfiles
       include_tasks: ../tasks/dotfiles.yml

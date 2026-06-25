@@ -43,7 +43,7 @@
           - neovim
           - snapd
           - strace
-          - the_silver_searcher
+          - ripgrep
       tags: [packages]
     - name: snap symlink (for classic)
       become: yes

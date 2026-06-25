@@ -14,11 +14,28 @@ return {
       if has_actions and has_telescope then
         telescope.setup({
           defaults = {
+            -- Use ripgrep for live_grep and (with -g flags) find_files
+            vimgrep_arguments = {
+              "rg",
+              "--color=never",
+              "--no-heading",
+              "--with-filename",
+              "--line-number",
+              "--column",
+              "--smart-case",
+              "--hidden",
+              "--glob=!**/.git/*",
+            },
             mappings = {
               i = {
                 ["<C-j>"] = actions.move_selection_next,
                 ["<C-k>"] = actions.move_selection_previous,
               },
+            },
+          },
+          pickers = {
+            find_files = {
+              find_command = { "rg", "--files", "--hidden", "--glob=!**/.git/*" },
             },
           },
         })

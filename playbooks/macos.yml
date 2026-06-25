@@ -38,7 +38,7 @@
           - jq
           - neovim
           - starship
-          - the_silver_searcher
+          - ripgrep
           - tmux
           - zsh-autosuggestions
           - zsh-syntax-highlighting

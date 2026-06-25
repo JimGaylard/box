@@ -41,5 +41,6 @@ Dotfiles are copied with `force: yes`, overwriting existing files.
   ```
 - **Zsh Completion Order**: In `dotfiles/zshrc`, `compinit` must be initialized *before* modular configurations in `~/.zshrc.d/` are sourced to ensure functions using `compdef` (such as `uv` or `aws` completions) do not cause "command not found: compdef" errors.
 - **Repository Isolation & Propagation**: Do not directly modify configuration files in the home directory (`~/`). Always make edits to files under the `dotfiles/` directory in this git repository, then propagate those changes by running `bin/install.sh` (e.g., `bin/install.sh playbooks/macos.yml --tags dotfiles`).
+- **Always Apply Changes**: After making any change in this repo (dotfiles, playbooks, packages), always apply it by running the appropriate `bin/install.sh` invocation before considering the task done. Use `--tags dotfiles` for dotfile-only edits; run the full playbook when packages or setup modules change. Never leave changes unapplied.
 
 
