@@ -47,13 +47,9 @@ return {
     config = function()
       local has_ap, ap = pcall(require, "nvim-autopairs")
       if has_ap then
+        -- Function-call () insertion on accept is handled by blink.cmp
+        -- (completion.accept.auto_brackets), so no completion hook here.
         ap.setup({ check_ts = true })
-        -- Insert ( after selecting a function/method in completion
-        local has_cmp, cmp = pcall(require, "cmp")
-        local has_ci, cmp_autopairs = pcall(require, "nvim-autopairs.completion.cmp")
-        if has_cmp and has_ci then
-          cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-        end
       end
     end,
   },
