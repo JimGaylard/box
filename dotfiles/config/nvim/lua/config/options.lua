@@ -3,15 +3,22 @@ local opt = vim.opt
 -- General Options
 opt.inccommand = "nosplit"
 opt.swapfile = false
+opt.undofile = true -- persistent undo across sessions (pairs with undotree)
 opt.exrc = true
 opt.background = "dark"
+opt.termguicolors = true -- truecolor (tmux is already Tc-ready)
 opt.ttimeoutlen = 10
 opt.shortmess:append("filmnrxoOtTI")
 opt.history = 1000
 opt.spell = false
 opt.hidden = true
-opt.lazyredraw = true
 opt.linebreak = true
+
+-- Window / scroll behaviour
+opt.scrolloff = 8 -- keep 8 lines of context above/below cursor
+opt.splitbelow = true -- :split opens below
+opt.splitright = true -- :vsplit opens right
+opt.updatetime = 250 -- snappier CursorHold (gitsigns/hover/diagnostics)
 
 -- Use ripgrep for :grep / :grepadd
 if vim.fn.executable("rg") == 1 then
@@ -22,6 +29,7 @@ end
 -- Line numbers off by default; toggle hybrid numbers with <leader>n
 opt.number = false
 opt.relativenumber = false
+opt.signcolumn = "yes" -- always show sign column (no gutter jitter from LSP/git)
 
 opt.backspace = { "indent", "eol", "start" }
 opt.linespace = 0
@@ -50,8 +58,7 @@ opt.backupskip = { "/tmp/*", "/private/tmp/*" }
 -- Secure
 opt.secure = true
 
--- Host interpreters (copied from original config)
-vim.g.python_host_prog = "/usr/bin/python"
+-- Host interpreter (python3 remote plugins; python2 host removed in nvim 0.12)
 vim.g.python3_host_prog = "/usr/bin/python3"
 
 -- Autocmds
