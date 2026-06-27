@@ -1,47 +1,50 @@
 local keymap = vim.keymap.set
 
 -- Edit vimrc shortcut
-keymap("n", "<leader>v", ":tabedit $MYVIMRC<CR>")
-keymap("n", "<leader>map", ":TBrowseOutput map<CR>")
+keymap("n", "<leader>v", ":tabedit $MYVIMRC<CR>", { desc = "Edit config" })
 
--- Telescope fuzzy finder (loaded lazily on first use)
-keymap("n", "<leader>ff", function() require("telescope.builtin").find_files() end, { desc = "Find files" })
-keymap("n", "<leader>fg", function() require("telescope.builtin").live_grep() end, { desc = "Live grep" })
-keymap("n", "<leader>fb", function() require("telescope.builtin").buffers() end, { desc = "Buffers" })
-keymap("n", "<leader>fh", function() require("telescope.builtin").help_tags() end, { desc = "Help tags" })
+-- Note: Telescope (,ff ,fg ,fb ,fh) and the test runner ,t group (vim-test +
+-- Vimux) live in their plugin specs in lua/plugins/editor.lua via `keys = {}`,
+-- which also lazy-loads those plugins on first keypress.
 
 -- LSP diagnostics navigation (jump moves the cursor and shows the float)
-keymap("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = "Next diagnostic" })
-keymap("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Prev diagnostic" })
+keymap("n", "]d", function()
+	vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Next diagnostic" })
+keymap("n", "[d", function()
+	vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Prev diagnostic" })
 keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 
 -- Regular search corrections
 keymap("n", "/", "/\\v")
 
 -- Toggle search highlight
-keymap("n", "<leader>/", ':let @/ = ""<CR>', { silent = true })
+keymap("n", "<leader>/", ':let @/ = ""<CR>', { silent = true, desc = "Clear search highlight" })
 
 -- Toggle hybrid line numbers on/off
 keymap("n", "<leader>n", function()
-  local on = not vim.wo.number
-  vim.wo.number = on
-  vim.wo.relativenumber = on
+	local on = not vim.wo.number
+	vim.wo.number = on
+	vim.wo.relativenumber = on
 end, { desc = "Toggle line numbers" })
 
--- File info copy mappings
-keymap("n", ",cf", ':let @*=expand("%")<CR>')
-keymap("n", ",cp", ':let @*=expand("%:p")<CR>')
+-- Yank file name / path to the system clipboard (,y = yank group)
+keymap("n", ",yf", ':let @*=expand("%")<CR>', { desc = "Yank file name" })
+keymap("n", ",yp", ':let @*=expand("%:p")<CR>', { desc = "Yank file path" })
 
--- Run ctags
-keymap("n", ",t", ":!ctags -R .<CR>")
+-- Run ctags (moved off ,t to free that prefix for the Vimux test group)
+keymap("n", ",T", ":!ctags -R .<CR>", { desc = "Run ctags" })
 
 -- Window navigation mappings
-keymap("", "<C-J>", "<C-W>j")
-keymap("", "<C-K>", "<C-W>k")
-keymap("", "<C-L>", "<C-W>l")
-keymap("", "<C-H>", "<C-W>h")
-keymap("", "<S-H>", "gT")
-keymap("", "<S-L>", "gt")
+keymap("", "<C-J>", "<C-W>j", { desc = "Window below" })
+keymap("", "<C-K>", "<C-W>k", { desc = "Window above" })
+keymap("", "<C-L>", "<C-W>l", { desc = "Window right" })
+keymap("", "<C-H>", "<C-W>h", { desc = "Window left" })
+
+-- Tab navigation (H/L left alone so they keep their top/bottom-of-screen motions)
+keymap("n", "]t", "gt", { desc = "Next tab" })
+keymap("n", "[t", "gT", { desc = "Prev tab" })
 
 -- Visual-line movement for bare j/k, but keep counts linewise (5j = 5 real lines)
 keymap({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
@@ -57,33 +60,21 @@ keymap("", "zh", "zH")
 -- Consistent Y behavior (Yank to end of line)
 keymap("n", "Y", "y$")
 
--- Format JSON shortcut
-keymap("n", "<leader>jt", "<Esc>:%!python -m json.tool<CR><Esc>:set filetype=json<CR>")
-
--- Vimux Mappings
-keymap("n", "<leader>r", ":VimuxRunLastCommand<CR>")
-keymap("n", "<leader>s", ":VimuxRunCommand ''<left>")
-keymap("n", "<leader>z", ":VimuxZoomRunner<CR>")
-keymap("n", "<Leader>x", ":VimuxInterruptRunner<CR>")
-keymap("n", "˚", ":VimuxScrollUpInspect<CR>")
-keymap("n", "∆", ":VimuxScrollDownInspect<CR>")
-
--- Command corrections for typos (stupid shift key fixes)
-local function create_cmd(name, target)
-	vim.api.nvim_create_user_command(name, function(opts)
-		local bang = opts.bang and "!" or ""
-		vim.cmd(target .. bang .. " " .. opts.args)
-	end, { bang = true, nargs = "*", complete = "file" })
+-- Command-line abbreviations for common shift-key typos. cnoreabbrev only
+-- expands at the command position, so they don't shadow real command names
+-- mid-line, and bang/args (:W!, :W file) pass through naturally.
+local cmd_typos = {
+	E = "e",
+	W = "w",
+	Wq = "wq",
+	WQ = "wq",
+	Wa = "wa",
+	WA = "wa",
+	Q = "q",
+	QA = "qa",
+	Qa = "qa",
+	Tabe = "tabe",
+}
+for typo, correct in pairs(cmd_typos) do
+	vim.cmd(string.format("cnoreabbrev %s %s", typo, correct))
 end
-
-create_cmd("E", "e")
-create_cmd("W", "w")
-create_cmd("Wq", "wq")
-create_cmd("WQ", "wq")
-create_cmd("Wa", "wa")
-create_cmd("WA", "wa")
-create_cmd("Q", "q")
-create_cmd("QA", "qa")
-create_cmd("Qa", "qa")
-
-keymap("c", "Tabe", "tabe")

@@ -17,7 +17,7 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
-      { "<leader>td", "<cmd>TodoTelescope<cr>", desc = "Find TODOs" },
+      { "<leader>ft", "<cmd>TodoTelescope<cr>", desc = "Find TODOs" },
     },
     config = function()
       local has_tc, tc = pcall(require, "todo-comments")
