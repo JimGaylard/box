@@ -37,6 +37,7 @@
           - htop
           - jq
           - neovim
+          - prettierd
           - starship
           - ripgrep
           - tmux
