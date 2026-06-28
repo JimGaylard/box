@@ -36,11 +36,9 @@ keymap("n", ",yp", ':let @*=expand("%:p")<CR>', { desc = "Yank file path" })
 -- Run ctags (moved off ,t to free that prefix for the Vimux test group)
 keymap("n", ",T", ":!ctags -R .<CR>", { desc = "Run ctags" })
 
--- Window navigation mappings
-keymap("", "<C-J>", "<C-W>j", { desc = "Window below" })
-keymap("", "<C-K>", "<C-W>k", { desc = "Window above" })
-keymap("", "<C-L>", "<C-W>l", { desc = "Window right" })
-keymap("", "<C-H>", "<C-W>h", { desc = "Window left" })
+-- Window navigation: C-h/j/k/l handled by vim-tmux-navigator (see
+-- lua/plugins/ergonomics.lua), which moves seamlessly across nvim splits
+-- and tmux panes.
 
 -- Tab navigation (H/L left alone so they keep their top/bottom-of-screen motions)
 keymap("n", "]t", "gt", { desc = "Next tab" })

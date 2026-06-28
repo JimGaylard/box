@@ -40,6 +40,27 @@ return {
     },
   },
 
+  -- Tmux Navigator: seamless C-h/j/k/l movement across nvim splits and tmux
+  -- panes. The tmux side (root C-h/j/k/l with is_vim detection) lives in
+  -- dotfiles/tmux.conf; both halves are required.
+  {
+    "christoomey/vim-tmux-navigator",
+    cmd = {
+      "TmuxNavigateLeft",
+      "TmuxNavigateDown",
+      "TmuxNavigateUp",
+      "TmuxNavigateRight",
+      "TmuxNavigatePrevious",
+    },
+    keys = {
+      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Nav left (split/pane)" },
+      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Nav down (split/pane)" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Nav up (split/pane)" },
+      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Nav right (split/pane)" },
+      { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Nav to previous (split/pane)" },
+    },
+  },
+
   -- Autopairs: auto-close brackets/quotes, integrates with nvim-cmp
   {
     "windwp/nvim-autopairs",
