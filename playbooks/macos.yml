@@ -65,6 +65,10 @@
       include_tasks: ../tasks/neovim.yml
       tags: [neovim, dotfiles]
 
+    - name: Setup tmux
+      include_tasks: ../tasks/tmux.yml
+      tags: [tmux, dotfiles]
+
     - name: Setup golang
       include_tasks: ../tasks/golang.yml
       tags: [golang, dotfiles]
