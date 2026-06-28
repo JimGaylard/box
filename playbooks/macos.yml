@@ -32,6 +32,7 @@
     - name: Install Homebrew packages
       community.general.homebrew:
         name:
+          - fzf
           - gh
           - git
           - htop
