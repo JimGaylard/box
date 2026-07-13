@@ -3,7 +3,8 @@ return {
   {
     "folke/flash.nvim",
     event = "VeryLazy",
-    opts = {},
+    -- char mode off: keep vanilla f/F/t/T/;/, — flash only on s/S/r
+    opts = { modes = { char = { enabled = false } } },
     keys = {
       { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
       { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
