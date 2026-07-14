@@ -19,8 +19,19 @@ keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Line diagnostics" 
 -- Regular search corrections
 keymap("n", "/", "/\\v")
 
--- Toggle search highlight
-keymap("n", "<leader>/", ':let @/ = ""<CR>', { silent = true, desc = "Clear search highlight" })
+-- Clear transient highlights: search register + show-me's range extmarks
+-- (namespace 'show_me_highlight', painted by the external show-me tool).
+local function clear_show_me_highlight()
+	local ns = vim.api.nvim_create_namespace("show_me_highlight")
+	vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+end
+vim.api.nvim_create_user_command("ShowMeClear", clear_show_me_highlight, {
+	desc = "Clear show-me range highlight in current buffer",
+})
+keymap("n", "<leader>/", function()
+	vim.fn.setreg("/", "")
+	clear_show_me_highlight()
+end, { silent = true, desc = "Clear search + show-me highlights" })
 
 -- Toggle hybrid line numbers on/off
 keymap("n", "<leader>n", function()
