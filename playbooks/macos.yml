@@ -32,9 +32,15 @@
     - name: Install Homebrew packages
       community.general.homebrew:
         name:
+          - coreutils
+          - findutils
           - fzf
+          - gawk
           - gh
           - git
+          - gnu-sed
+          - gnu-tar
+          - grep
           - htop
           - jq
           - neovim

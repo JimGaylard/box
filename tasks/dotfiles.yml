@@ -127,3 +127,12 @@
     mode: '0644'
   when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles, aws]
+
+- name: Deploy GNU tools shell configuration (Zsh)
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/gnu.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/gnu.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles, gnu]
