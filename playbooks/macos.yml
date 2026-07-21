@@ -33,6 +33,10 @@
       community.general.homebrew:
         name:
           - coreutils
+          - colima
+          - docker
+          - docker-buildx
+          - docker-compose
           - findutils
           - fzf
           - gawk
