@@ -38,6 +38,7 @@
           - docker-buildx
           - docker-compose
           - findutils
+          - fswatch
           - fzf
           - gawk
           - gh
