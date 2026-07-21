@@ -1,0 +1,22 @@
+---
+- name: Ensure Docker CLI plugins directory exists (Darwin)
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.docker/cli-plugins"
+    state: directory
+    mode: '0755'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [docker]
+
+- name: Link Docker CLI plugins from Homebrew (Darwin)
+  file:
+    src: "{{ homebrew_prefix }}/opt/{{ item }}/bin/{{ item }}"
+    dest: "{{ ansible_facts['user_dir'] }}/.docker/cli-plugins/{{ item }}"
+    state: link
+    force: yes
+  loop:
+    - docker-compose
+    - docker-buildx
+  vars:
+    homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [docker]

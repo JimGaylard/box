@@ -68,6 +68,10 @@
         state: present
       tags: [packages, casks]
 
+    - name: Setup docker
+      include_tasks: ../tasks/docker.yml
+      tags: [docker, dotfiles]
+
     - name: Deploy dotfiles
       include_tasks: ../tasks/dotfiles.yml
       tags: [dotfiles]
