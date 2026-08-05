@@ -128,7 +128,7 @@
   when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles, aws]
 
-- name: Deploy 1Password SSH agent shell configuration (Zsh)
+- name: Deploy bd 1Password SSH agent wrapper (Zsh)
   copy:
     src: "{{ playbook_dir }}/../dotfiles/zshrc.d/ssh-agent.zsh"
     dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/ssh-agent.zsh"
