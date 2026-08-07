@@ -26,7 +26,7 @@ if vim.fn.executable("rg") == 1 then
   opt.grepformat = "%f:%l:%c:%m"
 end
 
--- Line numbers off by default; toggle hybrid numbers with <leader>n
+-- Line numbers off by default; toggle absolute numbers with <leader>n
 opt.number = false
 opt.relativenumber = false
 opt.signcolumn = "yes" -- always show sign column (no gutter jitter from LSP/git)

@@ -33,11 +33,10 @@ keymap("n", "<leader>/", function()
 	clear_show_me_highlight()
 end, { silent = true, desc = "Clear search + show-me highlights" })
 
--- Toggle hybrid line numbers on/off
+-- Toggle absolute line numbers on/off
 keymap("n", "<leader>n", function()
-	local on = not vim.wo.number
-	vim.wo.number = on
-	vim.wo.relativenumber = on
+	vim.wo.number = not vim.wo.number
+	vim.wo.relativenumber = false
 end, { desc = "Toggle line numbers" })
 
 -- Toggle line wrap on/off
