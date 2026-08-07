@@ -40,6 +40,11 @@ keymap("n", "<leader>n", function()
 	vim.wo.relativenumber = on
 end, { desc = "Toggle line numbers" })
 
+-- Toggle line wrap on/off
+keymap("n", "<leader>w", function()
+	vim.wo.wrap = not vim.wo.wrap
+end, { desc = "Toggle line wrap" })
+
 -- Yank file name / path to the system clipboard (,y = yank group)
 keymap("n", ",yf", ':let @*=expand("%")<CR>', { desc = "Yank file name" })
 keymap("n", ",yp", ':let @*=expand("%:p")<CR>', { desc = "Yank file path" })
