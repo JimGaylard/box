@@ -3,11 +3,11 @@
 # Plain `neomutt` opens jim@home; `c` then Tab cycles the other inboxes.
 
 # macOS ttys claim ^O as the "discard" control char and eat it before
-# neomutt sees it (cbreak keeps it active). Undefine it at startup so the
-# Ctrl-o sidebar-open binding works. The backtick runs on the launching tty
-# at parse time; the throwaway variable soaks up its (empty) output, since
-# a bare backtick line is a parse error.
-set my_stty = "`stty discard undef`"
+# neomutt sees it, which kills the Ctrl-o sidebar-open binding. The fix
+# lives in zshrc.d/neomutt.zsh: an alias runs `stty discard undef` in the
+# shell that owns the tty before neomutt starts. An in-config backtick was
+# tried and does NOT work — the subshell's stdin is not reliably the
+# terminal (proven 2026-08-11).
 
 set mbox_type = Maildir
 set folder = ~/.mail/agents

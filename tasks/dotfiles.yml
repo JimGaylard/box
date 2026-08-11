@@ -105,6 +105,15 @@
   when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles]
 
+- name: Deploy neomutt shell configuration (Zsh)
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/neomutt.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/neomutt.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
 - name: gitignore_global
   copy:
     src: "{{ playbook_dir }}/../dotfiles/gitignore_global"
