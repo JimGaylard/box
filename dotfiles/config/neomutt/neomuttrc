@@ -32,8 +32,8 @@ set sidebar_folder_indent = yes
 set sidebar_delim_chars = "/"
 set sidebar_format = "%D%?F? [%F]?%*  %?N?%N/?%S"
 set mail_check_stats = yes
-bind index,pager \Cn sidebar-next
-bind index,pager \Cp sidebar-prev
+bind index,pager ] sidebar-next
+bind index,pager [ sidebar-prev
 bind index,pager \Co sidebar-open
 
 # Sidebar colors: new mail pops green, the selected box gets a cyan block,
