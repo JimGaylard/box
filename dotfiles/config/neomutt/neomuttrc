@@ -1,0 +1,53 @@
+# Neomutt over the agent-mail maildirs (~/.mail/agents).
+# `folder` points at the maildir root so neomutt never asks to create ~/Mail.
+# Plain `neomutt` opens jim@home; `c` then Tab cycles the other inboxes.
+
+# macOS ttys claim ^O as the "discard" control char and eat it before
+# neomutt sees it (cbreak keeps it active). Undefine it at startup so the
+# Ctrl-o sidebar-open binding works. The backtick runs on the launching tty
+# at parse time; the throwaway variable soaks up its (empty) output, since
+# a bare backtick line is a parse error.
+set my_stty = "`stty discard undef`"
+
+set mbox_type = Maildir
+set folder = ~/.mail/agents
+set spool_file = +home/jim
+set record = ""
+set move = no
+set copy = no
+set mark_old = no
+
+# Every maildir under ~/.mail/agents, discovered at startup — new agents
+# appear on the next neomutt launch, no config edit. Handles both layouts:
+# addr maildirs (journal-collector/super) and flat ones (tars-main, memory).
+mailboxes `find ~/.mail/agents -maxdepth 3 -type d -name new | sed 's|/new$||' | sort | tr '\n' ' '`
+
+# Sidebar: all mailboxes visible with new-mail counts. Ctrl-n/p to move,
+# Ctrl-o to open the highlighted box. (Ctrl-h/j/k/l belong to
+# vim-tmux-navigator at tmux root — see ~/box dotfiles/tmux.conf.)
+set sidebar_visible = yes
+set sidebar_width = 42
+set sidebar_short_path = yes
+set sidebar_folder_indent = yes
+set sidebar_delim_chars = "/"
+set sidebar_format = "%D%*  %N/%S"
+set mail_check_stats = yes
+bind index,pager \Cn sidebar-next
+bind index,pager \Cp sidebar-prev
+bind index,pager \Co sidebar-open
+
+# Threaded view; threads only link where mails carry In-Reply-To/References
+# (agent-mail sets both when the sender passes --in-reply-to).
+set sort = reverse-threads
+set sort_aux = last-date-received
+
+# Notmuch: same maildirs, indexed. %g shows notmuch tags in the index.
+# X prompts for a notmuch query and opens it as a virtual folder;
+# + pulls the entire thread of the current message into view.
+set nm_default_url = "notmuch:///Users/jimg/.mail"
+set index_format = "%4C %Z %{%b %d %H:%M} %-28.28F %s %g"
+virtual-mailboxes "questions" "notmuch://?query=subject:'[question]'"
+virtual-mailboxes "blockers"  "notmuch://?query=subject:'[blocker]'"
+virtual-mailboxes "today"     "notmuch://?query=date:today"
+bind index,pager X vfolder-from-query
+bind index,pager + entire-thread
