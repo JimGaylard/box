@@ -22,9 +22,9 @@ set mark_old = no
 # addr maildirs (journal-collector/super) and flat ones (tars-main, memory).
 mailboxes `find ~/.mail/agents -maxdepth 3 -type d -name new | sed 's|/new$||' | sort | tr '\n' ' '`
 
-# Sidebar: all mailboxes visible with new-mail counts. Ctrl-n/p to move,
-# Ctrl-o to open the highlighted box. (Ctrl-h/j/k/l belong to
-# vim-tmux-navigator at tmux root — see ~/box dotfiles/tmux.conf.)
+# Sidebar: all mailboxes visible with new-mail counts. ] and [ move the
+# highlight, Ctrl-o opens it. (Ctrl-h/j/k/l belong to vim-tmux-navigator
+# at tmux root — see ~/box dotfiles/tmux.conf.)
 set sidebar_visible = yes
 set sidebar_width = 42
 set sidebar_short_path = yes
