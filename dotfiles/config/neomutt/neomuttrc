@@ -30,24 +30,81 @@ set sidebar_width = 42
 set sidebar_short_path = yes
 set sidebar_folder_indent = yes
 set sidebar_delim_chars = "/"
-set sidebar_format = "%D%*  %N/%S"
+set sidebar_format = "%D%?F? [%F]?%*  %?N?%N/?%S"
 set mail_check_stats = yes
 bind index,pager \Cn sidebar-next
 bind index,pager \Cp sidebar-prev
 bind index,pager \Co sidebar-open
+
+# Sidebar colors: new mail pops green, the selected box gets a cyan block,
+# the divider fades into the background.
+color sidebar_new brightgreen default
+color sidebar_indicator black brightcyan
+color sidebar_highlight white color8
+color sidebar_divider color8 default
 
 # Threaded view; threads only link where mails carry In-Reply-To/References
 # (agent-mail sets both when the sender passes --in-reply-to).
 set sort = reverse-threads
 set sort_aux = last-date-received
 
+# Threading ergonomics: only real reference headers thread, jump follows new
+# mail out of collapsed threads, za/zA fold like vim.
+set strict_threads = yes
+set uncollapse_jump = yes
+bind index za collapse-thread
+bind index zA collapse-all
+color tree brightmagenta default
+
 # Notmuch: same maildirs, indexed. %g shows notmuch tags in the index.
 # X prompts for a notmuch query and opens it as a virtual folder;
 # + pulls the entire thread of the current message into view.
 set nm_default_url = "notmuch:///Users/jimg/.mail"
-set index_format = "%4C %Z %{%b %d %H:%M} %-28.28F %s %g"
+# Relative dates: time for today, month+day this year, full date otherwise.
+set index_format = "%4C %Z %<[y?%<[d?%[%H:%M   ]&%[%b %d  ]>&%[%y-%m-%d]> %-28.28F %s %g"
 virtual-mailboxes "questions" "notmuch://?query=subject:'[question]'"
 virtual-mailboxes "blockers"  "notmuch://?query=subject:'[blocker]'"
 virtual-mailboxes "today"     "notmuch://?query=date:today"
 bind index,pager X vfolder-from-query
 bind index,pager + entire-thread
+
+# Index colors: cyan bar on the current row; new green, flagged red,
+# deleted dimmed.
+color indicator black brightcyan
+color index brightgreen default ~N
+color index brightred default ~F
+color index color8 default ~D
+
+# Message-type colors by subject tag — last-match-wins, so these sit after
+# the general index rules above to take precedence.
+color index brightred default "~s \\[blocker\\]"
+color index brightyellow default "~s \\[question\\]"
+
+# Status bar: folder, counts that only appear when non-zero, position at
+# the right edge.
+set status_format = " %f  %m msgs%?n? | %n new?%?F? | %F flagged?%?t? | %t tagged? %> %P "
+color status black cyan
+
+# Pager headers: hide everything except the few that matter, in a fixed
+# order; subject stands out.
+ignore *
+unignore From: To: Cc: Date: Subject: X-Type:
+hdr_order From: To: Cc: Date: Subject: X-Type:
+color hdrdefault cyan default
+color header brightwhite default "^Subject:"
+
+# Pager niceties: mini-index above the message, no scroll-past-end, a
+# little context on page turns, no wrap markers, colored quotes and URLs.
+set pager_index_lines = 8
+set pager_stop = yes
+set pager_context = 3
+set markers = no
+color quoted green default
+color quoted1 magenta default
+color body brightblue default "https?://[^ ]+"
+
+# Faster refresh: poll the maildirs often and never sit on a key prompt.
+set timeout = 10
+set mail_check = 5
+set wait_key = no
+set sleep_time = 0
