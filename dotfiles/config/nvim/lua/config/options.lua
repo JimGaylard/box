@@ -83,6 +83,16 @@ autocmd("FileType", {
   group = custom_group,
 })
 
+-- Wrap prose filetypes at word boundaries; code stays unwrapped (opt.wrap = false above)
+autocmd("FileType", {
+  pattern = { "markdown", "text", "gitcommit", "rst", "asciidoc", "tex", "mail" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+  end,
+  group = custom_group,
+})
+
 autocmd("FileType", {
   pattern = "python",
   callback = function()
