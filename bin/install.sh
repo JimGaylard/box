@@ -10,8 +10,8 @@ if ! ansible-galaxy collection list 2>/dev/null | grep -q 'community.general'; t
   ansible-galaxy collection install community.general
 fi
 
-# The macOS playbook installs everything via Homebrew and has no
-# become/sudo tasks, so never prompt for a become password on Darwin.
+# The macOS playbook has no become tasks; it prompts for the sudo password
+# itself (vars_prompt) for casks whose pkg installer needs it.
 if [ "$(uname)" = "Darwin" ]; then
   ansible-playbook "$@"
 elif [ -n "${ANSIBLE_BECOME_PASS:-}" ]; then
