@@ -17,10 +17,12 @@ set move = no
 set copy = no
 set mark_old = no
 
-# Every maildir under ~/.mail/agents, discovered at startup — new agents
-# appear on the next neomutt launch, no config edit. Handles both layouts:
-# addr maildirs (journal-collector/super) and flat ones (tars-main, memory).
-mailboxes `find ~/.mail/agents -maxdepth 3 -type d -name new | sed 's|/new$||' | sort | tr '\n' ' '`
+# Sidebar carries only what Jim reads directly: his own box and tars.
+# Everything else is reachable through the all-agents virtual folder below
+# (or X for an ad-hoc notmuch query) — the per-agent maildirs still exist,
+# they just don't clutter the sidebar. (Jim, 2026-08-24; the old line
+# auto-discovered every maildir under ~/.mail/agents.)
+mailboxes +home/jim +tars
 
 # Sidebar: all mailboxes visible with new-mail counts. ] and [ move the
 # highlight, Ctrl-o opens it. (Ctrl-h/j/k/l belong to vim-tmux-navigator
@@ -62,9 +64,8 @@ color tree brightmagenta default
 set nm_default_url = "notmuch:///Users/jimg/.mail"
 # Relative dates: time for today, month+day this year, full date otherwise.
 set index_format = "%4C %Z %<[y?%<[d?%[%H:%M   ]&%[%b %d  ]>&%[%y-%m-%d]> %-28.28F %s %g"
-virtual-mailboxes "questions" "notmuch://?query=subject:'[question]'"
-virtual-mailboxes "blockers"  "notmuch://?query=subject:'[blocker]'"
-virtual-mailboxes "today"     "notmuch://?query=date:today"
+# One box for everything any agent ever received — essentially All Mail.
+virtual-mailboxes "all-agents" "notmuch://?query=path:'agents/**'"
 bind index,pager X vfolder-from-query
 bind index,pager + entire-thread
 
