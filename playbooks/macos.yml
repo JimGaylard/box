@@ -1,9 +1,5 @@
 ---
 - hosts: localhost
-  vars_prompt:
-    - name: sudo_password
-      prompt: "sudo password (for casks that run a pkg installer)"
-      private: true
   tasks:
     - name: Setup Homebrew
       include_tasks: ../tasks/homebrew.yml
@@ -57,7 +53,6 @@
           - gcloud-cli
           - ghostty
         state: present
-        sudo_password: "{{ sudo_password }}"
       tags: [packages, casks]
 
     - name: Setup docker
