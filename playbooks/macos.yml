@@ -9,6 +9,11 @@
       include_tasks: ../tasks/homebrew.yml
       tags: [homebrew, dotfiles]
 
+    - name: Tap HashiCorp (terraform left Homebrew core after the BSL licence change)
+      community.general.homebrew_tap:
+        name: hashicorp/tap
+      tags: [packages]
+
     - name: Install Homebrew packages
       community.general.homebrew:
         name:
@@ -27,6 +32,7 @@
           - gnu-sed
           - gnu-tar
           - grep
+          - hashicorp/tap/terraform
           - htop
           - jq
           - neomutt
@@ -48,6 +54,7 @@
           - antigravity-cli
           - claude-code@latest
           - font-meslo-lg-nerd-font
+          - gcloud-cli
           - ghostty
         state: present
         sudo_password: "{{ sudo_password }}"
