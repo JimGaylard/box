@@ -2,7 +2,7 @@
 - hosts: localhost
   vars_prompt:
     - name: sudo_password
-      prompt: "sudo password (for casks that run a pkg installer, e.g. tailscale-app)"
+      prompt: "sudo password (for casks that run a pkg installer)"
       private: true
   tasks:
     - name: Setup Homebrew
@@ -49,7 +49,6 @@
           - claude-code@latest
           - font-meslo-lg-nerd-font
           - ghostty
-          - tailscale-app
         state: present
         sudo_password: "{{ sudo_password }}"
       tags: [packages, casks]
