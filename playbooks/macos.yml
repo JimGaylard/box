@@ -22,6 +22,7 @@
           - git
           - gnu-sed
           - gnu-tar
+          - herdr
           - grep
           - htop
           - jq
