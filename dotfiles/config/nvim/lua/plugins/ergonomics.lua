@@ -41,24 +41,20 @@ return {
     },
   },
 
-  -- Tmux Navigator: seamless C-h/j/k/l movement across nvim splits and tmux
-  -- panes. The tmux side (root C-h/j/k/l with is_vim detection) lives in
-  -- dotfiles/tmux.conf; both halves are required.
+  -- smart-splits: seamless C-h/j/k/l movement across nvim splits and
+  -- multiplexer panes. Herdr side: the plugin's own herdr plugin plus the
+  -- keys.command entries in dotfiles/config/herdr/config.toml. Tmux side:
+  -- root C-h/j/k/l with is_vim detection in dotfiles/tmux.conf. Not lazy
+  -- loaded so the multiplexer integration is ready before the first keypress.
   {
-    "christoomey/vim-tmux-navigator",
-    cmd = {
-      "TmuxNavigateLeft",
-      "TmuxNavigateDown",
-      "TmuxNavigateUp",
-      "TmuxNavigateRight",
-      "TmuxNavigatePrevious",
-    },
+    "mrjones2014/smart-splits.nvim",
+    lazy = false,
+    opts = {},
     keys = {
-      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Nav left (split/pane)" },
-      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Nav down (split/pane)" },
-      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Nav up (split/pane)" },
-      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Nav right (split/pane)" },
-      { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Nav to previous (split/pane)" },
+      { "<C-h>", function() require("smart-splits").move_cursor_left() end, desc = "Nav left (split/pane)" },
+      { "<C-j>", function() require("smart-splits").move_cursor_down() end, desc = "Nav down (split/pane)" },
+      { "<C-k>", function() require("smart-splits").move_cursor_up() end, desc = "Nav up (split/pane)" },
+      { "<C-l>", function() require("smart-splits").move_cursor_right() end, desc = "Nav right (split/pane)" },
     },
   },
 

@@ -1,0 +1,33 @@
+---
+- name: Create herdr config directory
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.config/herdr"
+    state: directory
+    mode: '0755'
+  tags: [herdr, dotfiles]
+
+- name: herdr config.toml
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/config/herdr/config.toml"
+    dest: "{{ ansible_facts['user_dir'] }}/.config/herdr/config.toml"
+    force: yes
+    mode: '0644'
+  tags: [herdr, dotfiles]
+
+- name: install smart-splits.nvim herdr plugin (C-h/j/k/l across nvim and herdr panes)
+  ansible.builtin.shell: |
+    if herdr plugin list 2>/dev/null | grep -q 'smart-splits.nvim'; then
+      echo already
+    else
+      herdr plugin install mrjones2014/smart-splits.nvim --yes
+    fi
+  register: herdr_plugin
+  changed_when: "'already' not in herdr_plugin.stdout"
+  tags: [herdr, dotfiles]
+
+- name: reload herdr config in the running server (no-op when not running)
+  ansible.builtin.command: herdr server reload-config
+  register: herdr_reload
+  failed_when: false
+  changed_when: herdr_reload.rc == 0
+  tags: [herdr, dotfiles]

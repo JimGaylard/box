@@ -1,0 +1,33 @@
+onboarding = false
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+# smart-splits.nvim: seamless C-h/j/k/l across nvim splits and herdr panes.
+# The plugin actions come from the herdr plugin shipped inside smart-splits.nvim
+# (installed by tasks/herdr.yml). If the focused pane runs (n)vim the key is
+# forwarded so nvim moves its split; otherwise herdr focuses the neighbour.
+# Nvim half lives in dotfiles/config/nvim (plugins/ergonomics.lua).
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "smart-splits.nvim.left"
+description = "navigate left (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "smart-splits.nvim.down"
+description = "navigate down (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "smart-splits.nvim.up"
+description = "navigate up (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "smart-splits.nvim.right"
+description = "navigate right (vim/herdr)"

@@ -67,6 +67,10 @@
       include_tasks: ../tasks/tmux.yml
       tags: [tmux, dotfiles]
 
+    - name: Setup herdr
+      include_tasks: ../tasks/herdr.yml
+      tags: [herdr, dotfiles]
+
     - name: Setup golang
       include_tasks: ../tasks/golang.yml
       tags: [golang, dotfiles]
