@@ -162,3 +162,12 @@
     mode: '0644'
   when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles, gnu]
+
+- name: Deploy beads shell configuration (Zsh)
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshrc.d/beads.zsh"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshrc.d/beads.zsh"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles, beads]
