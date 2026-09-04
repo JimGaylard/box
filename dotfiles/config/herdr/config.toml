@@ -8,6 +8,10 @@ show_agent_labels_on_pane_borders = true
 # (installed by tasks/herdr.yml). If the focused pane runs (n)vim the key is
 # forwarded so nvim moves its split; otherwise herdr focuses the neighbour.
 # Nvim half lives in dotfiles/config/nvim (plugins/ergonomics.lua).
+[keys]
+previous_tab = ["prefix+p", "prefix+ctrl+h"]
+next_tab = ["prefix+n", "prefix+ctrl+l"]
+
 [[keys.command]]
 key = "ctrl+h"
 type = "plugin_action"
