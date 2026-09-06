@@ -65,7 +65,7 @@ set nm_default_url = "notmuch:///Users/jimg/.mail"
 # Relative dates: time for today, month+day this year, full date otherwise.
 set index_format = "%4C %Z %<[y?%<[d?%[%H:%M   ]&%[%b %d  ]>&%[%y-%m-%d]> %-28.28F %s %g"
 # One box for everything any agent ever received — essentially All Mail.
-virtual-mailboxes "all-agents" "notmuch://?query=path:'agents/**'"
+virtual-mailboxes "all-agents" "notmuch://?query=path:agents/**"
 # Memories and ideas: agents mail themselves; ideas stay threads until
 # actioned (then they become beads). Superseded messages drop out.
 virtual-mailboxes "memory" "notmuch://?query=tag:memory and not tag:superseded"
