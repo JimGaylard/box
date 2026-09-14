@@ -9,3 +9,11 @@ for cmd in $__node_commands; do
     \$0 \"\$@\"
   }"
 done
+
+# Global npm binaries (firebase, hubspot, …) without waking nvm: put the newest
+# installed node's bin on PATH. One directory, nothing sourced, so shell start
+# stays fast; the lazy functions above still own node/npm/npx/yarn/pnpm.
+# (Resolving nvm's `default` alias needs nvm itself, so newest stands in.)
+__nvm_node_bins=("$HOME"/.nvm/versions/node/v*/bin(Nn))
+(( $#__nvm_node_bins )) && path=("$__nvm_node_bins[-1]" $path)
+unset __nvm_node_bins
