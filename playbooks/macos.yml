@@ -8,12 +8,17 @@
     - name: Install Homebrew packages
       community.general.homebrew:
         name:
+          - aria2
+          - bash
           - bat
+          - beads
+          - cmake
           - coreutils
           - colima
           - docker
           - docker-buildx
           - docker-compose
+          - ffmpeg
           - findutils
           - fswatch
           - fzf
@@ -22,22 +27,33 @@
           - git
           - gnu-sed
           - gnu-tar
+          - googleworkspace-cli
           - herdr
           - grep
           - htop
           - jq
+          - lazygit
           - neomutt
           - neovim
           - opentofu
+          - pi-coding-agent
+          - portaudio
           - prettierd
           - qrencode
           - starship
           - ripgrep
           - tmux
+          - watch
           - zsh-autosuggestions
           - zsh-syntax-highlighting
         state: present
       tags: [packages]
+
+    - name: Tap Homebrew repositories
+      community.general.homebrew_tap:
+        name: rp1-run/tap
+        state: present
+      tags: [packages, casks]
 
     - name: Install Homebrew casks
       community.general.homebrew_cask:
@@ -47,8 +63,11 @@
           - claude-code@latest
           - deltachat
           - font-meslo-lg-nerd-font
+          - font-powerline-symbols
           - gcloud-cli
           - ghostty
+          - hammerspoon
+          - rp1
         state: present
       tags: [packages, casks]
 
