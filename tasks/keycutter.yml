@@ -1,0 +1,25 @@
+---
+# keycutter (github.com/mbailey/keycutter), installed as a clone plus a
+# symlink. Deliberately not upstream's install.sh: that script ends by
+# running `keycutter update`, which writes into ~/.ssh. Nothing here may
+# touch ~/.ssh.
+- name: Clone keycutter repository
+  git:
+    repo: https://github.com/mbailey/keycutter.git
+    dest: "{{ ansible_facts['user_dir'] }}/.local/share/keycutter"
+    version: 840462571f0fdb7cfec0dd2b8129788a004a7b27
+  tags: [keycutter]
+
+- name: Create user bin directory
+  file:
+    path: "{{ ansible_facts['user_dir'] }}/.local/bin"
+    state: directory
+    mode: '0755'
+  tags: [keycutter]
+
+- name: Symlink keycutter into user bin
+  file:
+    src: "{{ ansible_facts['user_dir'] }}/.local/share/keycutter/bin/keycutter"
+    dest: "{{ ansible_facts['user_dir'] }}/.local/bin/keycutter"
+    state: link
+  tags: [keycutter]

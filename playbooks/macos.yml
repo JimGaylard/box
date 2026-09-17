@@ -35,6 +35,7 @@
           - lazygit
           - neomutt
           - neovim
+          - openssh
           - opentofu
           - pi-coding-agent
           - portaudio
@@ -44,6 +45,7 @@
           - ripgrep
           - tmux
           - watch
+          - ykman
           - zsh-autosuggestions
           - zsh-syntax-highlighting
         state: present
@@ -106,3 +108,7 @@
     - name: Setup rust
       include_tasks: ../tasks/rust.yml
       tags: [rust, dotfiles]
+
+    - name: Setup keycutter
+      include_tasks: ../tasks/keycutter.yml
+      tags: [keycutter]
