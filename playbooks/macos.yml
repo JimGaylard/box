@@ -64,6 +64,7 @@
           - 1password-cli
           - antigravity-cli
           - claude-code@latest
+          - codex
           - deltachat
           - font-meslo-lg-nerd-font
           - font-powerline-symbols
