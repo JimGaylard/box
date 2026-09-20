@@ -37,6 +37,7 @@
           - neovim
           - openssh
           - opentofu
+          - pass
           - pi-coding-agent
           - portaudio
           - prettierd
