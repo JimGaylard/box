@@ -1,17 +1,16 @@
-# bd -> 1Password SSH agent
+# bare bd -> refusal
 #
-# `bd dolt push` authenticates to GitHub through a Go SSH client, which never
-# reads ~/.ssh/config — so IdentityAgent doesn't reach it and it fails with
-# "run `ssh-add <key>`" while `git push` works. It reads SSH_AUTH_SOCK, which
-# macOS presets to its own launchd agent.
+# Agents go through the sanctioned wrappers, not bare `bd`. The 1Password SSH
+# agent socket wiring (`bd dolt push` needs SSH_AUTH_SOCK, because its Go SSH
+# client never reads ~/.ssh/config) used to live here; it now lives in
+# `bd-hub`, so this function no longer injects anything. It refuses instead.
 #
-# Deliberately NOT exported globally: that would hand every process in every
-# shell a path to the agent socket. Scoped to bd, for the length of one command.
+# Jim at the keyboard can still reach the real binary with `command bd`.
 bd() {
-  local op_sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-  if [ -S "$op_sock" ]; then
-    SSH_AUTH_SOCK="$op_sock" command bd "$@"
-  else
-    command bd "$@"
-  fi
+  {
+    echo "bd: bare bd is not used here."
+    echo "  raw verbs:  bd-hub <verb>     (e.g. bd-hub dolt push)"
+    echo "  creates:    bd-new <file.md>"
+  } >&2
+  return 1
 }
