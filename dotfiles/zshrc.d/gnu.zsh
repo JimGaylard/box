@@ -2,7 +2,7 @@
 # Homebrew installs these g-prefixed so system scripts keep BSD behaviour;
 # these aliases only affect interactive shells (scripts with #!/bin/sh
 # still hit the BSD versions). Each alias is guarded so a missing tool is a no-op.
-command -v gsed  &>/dev/null && alias sed='gsed'
+# sed stays BSD because the gsed alias tripped TARS on `sed -i ''` (Jim, 2026-09-28).
 command -v gawk  &>/dev/null && alias awk='gawk'
 command -v gfind &>/dev/null && alias find='gfind'
 command -v ggrep &>/dev/null && alias grep='ggrep'
