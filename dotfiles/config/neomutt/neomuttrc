@@ -12,6 +12,7 @@
 
 set mbox_type = Maildir
 set folder = ~/.mail/agents
+# Repeats the RULES virtual-mailbox query below; keep the two in step.
 set spool_file = "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234765.7020.11463@Jims-MacBook-Pro.session-mail\""
 set record = ""
 set move = no
@@ -55,17 +56,24 @@ bind index za collapse-thread
 bind index zA collapse-all
 color tree brightmagenta default
 
-# Notmuch: same maildirs, indexed. %g shows notmuch tags in the index.
-# X prompts for a notmuch query and opens it as a virtual folder;
-# + pulls the entire thread of the current message into view.
+# Notmuch: nm_default_url still serves X
+# (vfolder-from-query: prompts for a query, opens it as a virtual folder) and
+# + (entire-thread: pulls the whole thread of the current message into view);
+# %g shows notmuch tags in the index.
 set nm_default_url = "notmuch:///Users/jimg/.mail"
 # Relative dates: time for today, month+day this year, full date otherwise.
 set index_format = "%4C %Z %<[y?%<[d?%[%H:%M   ]&%[%b %d  ]>&%[%y-%m-%d]> %-28.28F %s %g"
 # One virtual mailbox per TARS memory label. A label's items carry its label
 # root's Message-ID in References, so each query keys on that root. The root
-# Message-IDs below are stable content ids, not environment values. notmuch
-# indexes the References header as `Refs` (index.header.Refs=References) and
-# Atom-Status as AtomStatus. Every query drops superseded items
+# Message-IDs below are stable content ids, not environment values. These
+# queries need notmuch index.header keys that box does not provision; without
+# them the mailboxes come up empty, with no error. Run once per machine:
+#   notmuch config set index.header.Refs References
+#   notmuch config set index.header.AtomStatus Atom-Status
+#   notmuch config set index.header.AtomKind Atom-Kind
+#   notmuch config set index.header.AtomId Atom-Id
+#   notmuch reindex 'path:agents/tars-memory/**'
+# Every query drops superseded items
 # (tag:superseded), retired items (AtomStatus:retired) and the label nodes
 # themselves (AtomKind:label). BOOT also drops WAKE items, which reference both
 # roots because the WAKE label is a child of BOOT.
