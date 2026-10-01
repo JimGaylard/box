@@ -1,22 +1,29 @@
 #!/usr/bin/env bash
-# Offline test: run copyparty locally with the args the LaunchAgent uses and
+# Offline test: run copyparty locally with the ProgramArguments rendered from the LaunchAgent template and
 # check every root-relative link/asset in a subfolder listing stays under
 # /copyparty/ (so the breadcrumb "top" link is not an unmapped /).
-# COPYPARTY_OLD_ARGS=1 runs the pre-rp-loc args; that must FAIL.
+# PLIST_TEMPLATE=path overrides the template (to prove it fails on an old one).
 set -uo pipefail
 fail() { echo "FAIL: $*" >&2; exit 1; }
 bin="$(uv tool dir --bin 2>/dev/null)/copyparty"
 [ -x "$bin" ] || { echo "SKIP: copyparty not installed"; exit 0; }
 
+root="$(cd "$(dirname "$0")/.." && pwd)"
+tpl="${PLIST_TEMPLATE:-$root/dotfiles/launchd/com.jimgaylard.copyparty.plist.j2}"
 work="$(mktemp -d)"; pid=""
 trap '[ -n "$pid" ] && kill "$pid" 2>/dev/null; wait 2>/dev/null' EXIT
-mkdir -p "$work/share/sub"; echo hi > "$work/share/sub/f.txt"
+home="$work/home"; mkdir -p "$home/workspace/scratch/copyparty/sub"; echo hi > "$home/workspace/scratch/copyparty/sub/f.txt"
 port="$(python3 -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])')"
 
-if [ -n "${COPYPARTY_OLD_ARGS:-}" ]; then vol="$work/share:copyparty:r"; extra=()
-else vol="$work/share:/:r"; extra=(--rp-loc /copyparty); fi
-"$bin" -i 127.0.0.1 -p "$port" -v "$vol" ${extra[@]+"${extra[@]}"} --ipa 127.0.0.0/8 --xdev -s --no-reload \
-  >"$work/log" 2>&1 &
+# Render the real template, take its ProgramArguments, swap only the -p value.
+ANSIBLE_LOCAL_TEMP="$work/tmp" ANSIBLE_HOME="$work/ah" ansible localhost -c local -m template \
+  -a "src=$tpl dest=$work/out.plist" \
+  -e "{\"copyparty_home\":\"$home\",\"copyparty_bin\":\"$(dirname "$bin")\"}" >"$work/ansible.log" 2>&1 </dev/null \
+  || { cat "$work/ansible.log" >&2; fail "template does not render"; }
+args=()
+while IFS= read -r a; do args+=("$a"); done < <(plutil -convert json -o - "$work/out.plist" \
+  | jq -r --arg port "$port" '.ProgramArguments | . as $a | to_entries | map(if .key > 0 and $a[.key-1] == "-p" then $port else .value end) | .[]')
+"${args[@]}" >"$work/log" 2>&1 &
 pid=$!
 
 UA='Mozilla/5.0 (Macintosh) Firefox/130.0'
