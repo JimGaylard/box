@@ -19,11 +19,14 @@ if [ "$1 $2 $3" = "serve --bg --set-path" ]; then
     "$FAKE_STATE" > "$FAKE_STATE.new" && mv "$FAKE_STATE.new" "$FAKE_STATE"
   exit 0
 fi
-if [ "$1 $2 $3 $5" = "serve --https=443 --set-path off" ]; then
-  jq --arg p "$4" 'del(.Web["fake.ts.net:443"].Handlers[$p])' \
-    "$FAKE_STATE" > "$FAKE_STATE.new" && mv "$FAKE_STATE.new" "$FAKE_STATE"
-  exit 0
-fi
+case "$1 $2 $3 $5" in
+  "serve --https="*" --set-path off"|"serve --http="*" --set-path off")
+    port="${2#--http*=}"
+    jq --arg p "$4" --arg port "$port" \
+      '.Web |= with_entries(if (.key | endswith(":" + $port)) then del(.value.Handlers[$p]) else . end)' \
+      "$FAKE_STATE" > "$FAKE_STATE.new" && mv "$FAKE_STATE.new" "$FAKE_STATE"
+    exit 0;;
+esac
 echo "unexpected: $*" >&2; exit 9
 STUB
 chmod +x "$work/tailscale"
@@ -72,6 +75,34 @@ grep -q -- '/.cpr' "$FAKE_CALLS" && fail "3c: touched foreign /.cpr"
 [ "$(jq -r '.Web["fake.ts.net:443"].Handlers["/.cpr"].Proxy' "$FAKE_STATE")" = "http://127.0.0.1:9/.cpr" ] || fail "3c: foreign /.cpr disturbed"
 case "$out" in *CHANGED*) fail "3c: CHANGED with nothing to do";; esac
 jq 'del(.Web["fake.ts.net:443"].Handlers["/.cpr"])' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
+
+# 3d. our /.cpr on :8443 (HTTPS) beside a foreign /.cpr on :443 -> removed only on :8443
+jq --arg b "$B" '.Web["fake.ts.net:8443"].Handlers["/.cpr"] = {Proxy: $b} | .TCP["8443"] = {HTTPS: true}
+  | .Web["fake.ts.net:443"].Handlers["/.cpr"] = {Proxy: "http://127.0.0.1:9/.cpr"}' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
+run
+[ $rc -eq 0 ] || fail "3d: rc=$rc $out"
+grep -q -- "serve --https=8443 --set-path /.cpr off" "$FAKE_CALLS" || fail "3d: no --https=8443 removal"
+grep -q -- "--https=443 " "$FAKE_CALLS" && fail "3d: touched :443"
+[ "$(jq -r '.Web["fake.ts.net:8443"].Handlers["/.cpr"] // "gone"' "$FAKE_STATE")" = gone ] || fail "3d: :8443 /.cpr still mapped"
+[ "$(jq -r '.Web["fake.ts.net:443"].Handlers["/.cpr"].Proxy' "$FAKE_STATE")" = "http://127.0.0.1:9/.cpr" ] || fail "3d: foreign :443 /.cpr disturbed"
+case "$out" in *CHANGED*) ;; *) fail "3d: no CHANGED marker: $out";; esac
+jq 'del(.Web["fake.ts.net:443"].Handlers["/.cpr"])' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
+
+# 3e. our /.cpr on two ports -> both removed
+jq --arg b "$B" '.Web["fake.ts.net:443"].Handlers["/.cpr"] = {Proxy: $b}
+  | .Web["fake.ts.net:8443"].Handlers["/.cpr"] = {Proxy: $b} | .TCP["8443"] = {HTTPS: true}' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
+run
+[ $rc -eq 0 ] || fail "3e: rc=$rc $out"
+[ "$(offs)" = 2 ] || fail "3e: expected 2 removals, got $(offs)"
+[ "$(jq -r '[.Web[] | .Handlers["/.cpr"] // empty] | length' "$FAKE_STATE")" = 0 ] || fail "3e: a /.cpr remains"
+
+# 3f. our /.cpr on a plain-HTTP port -> --http=<port>
+jq --arg b "$B" '.Web["fake.ts.net:8080"].Handlers["/.cpr"] = {Proxy: $b} | .TCP["8080"] = {HTTPS: false}' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
+run
+[ $rc -eq 0 ] || fail "3f: rc=$rc $out"
+grep -q -- "serve --http=8080 --set-path /.cpr off" "$FAKE_CALLS" || fail "3f: no --http=8080 removal"
+[ "$(jq -r '[.Web[] | .Handlers["/.cpr"] // empty] | length' "$FAKE_STATE")" = 0 ] || fail "3f: a /.cpr remains"
+jq 'del(.Web["fake.ts.net:8443"], .Web["fake.ts.net:8080"], .TCP["8443"], .TCP["8080"])' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
 
 # 4. unrelated mapping is untouched
 jq '.Web["fake.ts.net:443"].Handlers["/other"] = {Proxy: "http://127.0.0.1:9/"}' "$FAKE_STATE" > "$work/s" && mv "$work/s" "$FAKE_STATE"
