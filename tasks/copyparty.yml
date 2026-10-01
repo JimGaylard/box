@@ -1,0 +1,89 @@
+---
+- name: Create copyparty shared folder
+  file:
+    path: "{{ ansible_env.HOME }}/workspace/scratch/copyparty"
+    state: directory
+    mode: '0755'
+  tags: [copyparty]
+
+- name: Create copyparty log directory
+  file:
+    path: "{{ ansible_env.HOME }}/.local/state/copyparty"
+    state: directory
+    mode: '0755'
+  tags: [copyparty]
+
+- name: Check whether copyparty is installed as a uv tool
+  ansible.builtin.command: uv tool list
+  register: copyparty_uv_list
+  changed_when: false
+  tags: [copyparty]
+
+- name: Install copyparty via uv tool
+  ansible.builtin.command: uv tool install copyparty
+  when: copyparty_uv_list.stdout is not search('^copyparty ', multiline=True)
+  changed_when: true
+  tags: [copyparty]
+
+- name: Find the uv tool bin directory
+  ansible.builtin.command: uv tool dir --bin
+  register: copyparty_uv_bin
+  changed_when: false
+  tags: [copyparty]
+
+- name: Create LaunchAgents directory
+  file:
+    path: "{{ ansible_env.HOME }}/Library/LaunchAgents"
+    state: directory
+    mode: '0755'
+  tags: [copyparty]
+
+- name: Deploy copyparty LaunchAgent
+  template:
+    src: "{{ playbook_dir }}/../dotfiles/launchd/com.jimgaylard.copyparty.plist.j2"
+    dest: "{{ ansible_env.HOME }}/Library/LaunchAgents/com.jimgaylard.copyparty.plist"
+    mode: '0644'
+  vars:
+    copyparty_home: "{{ ansible_env.HOME }}"
+    copyparty_bin: "{{ copyparty_uv_bin.stdout }}"
+  register: copyparty_plist
+  tags: [copyparty]
+
+- name: Check whether the copyparty LaunchAgent is loaded
+  ansible.builtin.command: "launchctl print gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
+  register: copyparty_loaded
+  failed_when: false
+  changed_when: false
+  tags: [copyparty]
+
+- name: Unload copyparty LaunchAgent so launchd re-reads a changed plist
+  ansible.builtin.command: "launchctl bootout gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
+  register: copyparty_bootout
+  when: copyparty_plist.changed and copyparty_loaded.rc == 0
+  failed_when:
+    - copyparty_bootout.rc != 0
+    - "'No such process' not in copyparty_bootout.stderr"
+    - "'Could not find service' not in copyparty_bootout.stderr"
+  tags: [copyparty]
+
+- name: Wait for the copyparty LaunchAgent to be gone
+  ansible.builtin.command: "launchctl print gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
+  register: copyparty_gone
+  until: copyparty_gone.rc != 0
+  retries: 30
+  delay: 1
+  failed_when: false
+  changed_when: false
+  when: copyparty_plist.changed and copyparty_loaded.rc == 0
+  tags: [copyparty]
+
+- name: Load copyparty LaunchAgent (first install or changed plist)
+  ansible.builtin.command: "launchctl bootstrap gui/{{ ansible_facts['user_uid'] }} {{ ansible_env.HOME }}/Library/LaunchAgents/com.jimgaylard.copyparty.plist"
+  when: copyparty_loaded.rc != 0 or copyparty_plist.changed
+  tags: [copyparty]
+
+- name: Expose copyparty on tailscale serve (tailnet only, never funnel)
+  ansible.builtin.command: "{{ playbook_dir }}/../bin/copyparty-serve.sh"
+  register: copyparty_serve
+  changed_when: "'CHANGED' in copyparty_serve.stdout"
+  tags: [copyparty, copyparty-serve]
