@@ -1,6 +1,7 @@
-# Neomutt over the agent-mail maildirs (~/.mail/agents).
+# Neomutt over TARS's memory labels (~/.mail/agents/tars-memory), via notmuch.
 # `folder` points at the maildir root so neomutt never asks to create ~/Mail.
-# Plain `neomutt` opens jim@home; `c` then Tab cycles the other inboxes.
+# The sidebar holds one virtual mailbox per memory label: RULES, BOOT, WAKE,
+# MEMORY, PROJECTS, IDEAS. Plain `neomutt` opens on RULES.
 
 # macOS ttys claim ^O as the "discard" control char and eat it before
 # neomutt sees it, which kills the Ctrl-o sidebar-open binding. The fix
@@ -11,18 +12,14 @@
 
 set mbox_type = Maildir
 set folder = ~/.mail/agents
-set spool_file = +home/jim
+set spool_file = "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234765.7020.11463@Jims-MacBook-Pro.session-mail\""
 set record = ""
 set move = no
 set copy = no
 set mark_old = no
 
-# Sidebar carries only what Jim reads directly: his own box and tars.
-# Everything else is reachable through the all-agents virtual folder below
-# (or X for an ad-hoc notmuch query) — the per-agent maildirs still exist,
-# they just don't clutter the sidebar. (Jim, 2026-08-24; the old line
-# auto-discovered every maildir under ~/.mail/agents.)
-mailboxes +home/jim +tars
+# Sidebar carries the six memory-label mailboxes, defined further down as
+# virtual-mailboxes. X still opens an ad-hoc notmuch query.
 
 # Sidebar: all mailboxes visible with new-mail counts. ] and [ move the
 # highlight, Ctrl-o opens it. (Ctrl-h/j/k/l belong to vim-tmux-navigator
@@ -64,12 +61,20 @@ color tree brightmagenta default
 set nm_default_url = "notmuch:///Users/jimg/.mail"
 # Relative dates: time for today, month+day this year, full date otherwise.
 set index_format = "%4C %Z %<[y?%<[d?%[%H:%M   ]&%[%b %d  ]>&%[%y-%m-%d]> %-28.28F %s %g"
-# One box for everything any agent ever received — essentially All Mail.
-virtual-mailboxes "all-agents" "notmuch://?query=path:'agents/**'"
-# Memories and ideas: agents mail themselves; ideas stay threads until
-# actioned (then they become beads). Superseded messages drop out.
-virtual-mailboxes "memory" "notmuch://?query=tag:memory and not tag:superseded"
-virtual-mailboxes "ideas" "notmuch://?query=tag:idea and not tag:superseded"
+# One virtual mailbox per TARS memory label. A label's items carry its label
+# root's Message-ID in References, so each query keys on that root. The root
+# Message-IDs below are stable content ids, not environment values. notmuch
+# indexes the References header as `Refs` (index.header.Refs=References) and
+# Atom-Status as AtomStatus. Every query drops superseded items
+# (tag:superseded), retired items (AtomStatus:retired) and the label nodes
+# themselves (AtomKind:label). BOOT also drops WAKE items, which reference both
+# roots because the WAKE label is a child of BOOT.
+virtual-mailboxes "RULES" "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234765.7020.11463@Jims-MacBook-Pro.session-mail\""
+virtual-mailboxes "BOOT" "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234765.7138.15436@Jims-MacBook-Pro.session-mail\" and not Refs:\"1790234816.33288.22291@Jims-MacBook-Pro.session-mail\""
+virtual-mailboxes "WAKE" "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234816.33288.22291@Jims-MacBook-Pro.session-mail\""
+virtual-mailboxes "MEMORY" "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234765.7256.30576@Jims-MacBook-Pro.session-mail\""
+virtual-mailboxes "PROJECTS" "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234765.7374.17159@Jims-MacBook-Pro.session-mail\""
+virtual-mailboxes "IDEAS" "notmuch://?query=path:agents/tars-memory/** and not tag:superseded and not AtomStatus:retired and not AtomKind:label and Refs:\"1790234766.7493.29428@Jims-MacBook-Pro.session-mail\""
 bind index,pager X vfolder-from-query
 bind index,pager + entire-thread
 
