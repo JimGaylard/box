@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.jimgaylard.copyparty</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ copyparty_bin }}/copyparty</string>
+        <string>-i</string>
+        <string>127.0.0.1</string>
+        <string>-p</string>
+        <string>3923</string>
+        <string>-v</string>
+        <string>{{ copyparty_home }}/workspace/scratch/copyparty:copyparty:r</string>
+        <string>--ipa</string>
+        <string>127.0.0.0/8</string>
+        <string>--xdev</string>
+        <string>-s</string>
+        <string>--no-reload</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+    <key>StandardOutPath</key>
+    <string>{{ copyparty_home }}/.local/state/copyparty/copyparty.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ copyparty_home }}/.local/state/copyparty/copyparty.err.log</string>
+</dict>
+</plist>
