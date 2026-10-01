@@ -114,3 +114,7 @@
     - name: Setup keycutter
       include_tasks: ../tasks/keycutter.yml
       tags: [keycutter]
+
+    - name: Setup copyparty
+      include_tasks: ../tasks/copyparty.yml
+      tags: [copyparty]
