@@ -65,3 +65,9 @@
   ansible.builtin.command: "launchctl kickstart -k gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
   when: copyparty_plist.changed and copyparty_loaded.rc == 0
   tags: [copyparty]
+
+- name: Expose copyparty on tailscale serve (tailnet only, never funnel)
+  ansible.builtin.command: "{{ playbook_dir }}/../bin/copyparty-serve.sh"
+  register: copyparty_serve
+  changed_when: "'CHANGED' in copyparty_serve.stdout"
+  tags: [copyparty]
