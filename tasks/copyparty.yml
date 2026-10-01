@@ -21,7 +21,7 @@
 
 - name: Install copyparty via uv tool
   ansible.builtin.command: uv tool install copyparty
-  when: "'copyparty ' not in copyparty_uv_list.stdout"
+  when: copyparty_uv_list.stdout is not search('^copyparty ', multiline=True)
   changed_when: true
   tags: [copyparty]
 
@@ -56,18 +56,34 @@
   changed_when: false
   tags: [copyparty]
 
-- name: Load copyparty LaunchAgent
-  ansible.builtin.command: "launchctl bootstrap gui/{{ ansible_facts['user_uid'] }} {{ ansible_env.HOME }}/Library/LaunchAgents/com.jimgaylard.copyparty.plist"
-  when: copyparty_loaded.rc != 0
+- name: Unload copyparty LaunchAgent so launchd re-reads a changed plist
+  ansible.builtin.command: "launchctl bootout gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
+  register: copyparty_bootout
+  when: copyparty_plist.changed and copyparty_loaded.rc == 0
+  failed_when:
+    - copyparty_bootout.rc != 0
+    - "'No such process' not in copyparty_bootout.stderr"
+    - "'Could not find service' not in copyparty_bootout.stderr"
   tags: [copyparty]
 
-- name: Restart copyparty after a plist change
-  ansible.builtin.command: "launchctl kickstart -k gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
+- name: Wait for the copyparty LaunchAgent to be gone
+  ansible.builtin.command: "launchctl print gui/{{ ansible_facts['user_uid'] }}/com.jimgaylard.copyparty"
+  register: copyparty_gone
+  until: copyparty_gone.rc != 0
+  retries: 30
+  delay: 1
+  failed_when: false
+  changed_when: false
   when: copyparty_plist.changed and copyparty_loaded.rc == 0
+  tags: [copyparty]
+
+- name: Load copyparty LaunchAgent (first install or changed plist)
+  ansible.builtin.command: "launchctl bootstrap gui/{{ ansible_facts['user_uid'] }} {{ ansible_env.HOME }}/Library/LaunchAgents/com.jimgaylard.copyparty.plist"
+  when: copyparty_loaded.rc != 0 or copyparty_plist.changed
   tags: [copyparty]
 
 - name: Expose copyparty on tailscale serve (tailnet only, never funnel)
   ansible.builtin.command: "{{ playbook_dir }}/../bin/copyparty-serve.sh"
   register: copyparty_serve
   changed_when: "'CHANGED' in copyparty_serve.stdout"
-  tags: [copyparty]
+  tags: [copyparty, copyparty-serve]
