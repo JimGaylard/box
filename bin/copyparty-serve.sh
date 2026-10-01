@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# Idempotently map /copyparty and /.cpr on tailscale serve to the local copyparty.
+# Idempotently map /copyparty on tailscale serve to the local copyparty, which
+# runs with --rp-loc /copyparty so it serves its own assets under that prefix.
+# Removes a stale /.cpr mapping (from the pre-rp-loc setup) only when it points
+# at our copyparty (http://127.0.0.1:3923/.cpr); any other /.cpr is left alone.
 # Never uses funnel; refuses (exit 1) if Funnel is enabled before or after.
-# Prints "CHANGED" when it set a mapping, "OK" when nothing needed doing,
+# Prints "CHANGED" when it set or removed a mapping, "OK" when nothing needed doing,
 # "SKIP: ..." (exit 0) when no tailscale CLI exists.
 set -euo pipefail
 
 BASE=http://127.0.0.1:3923
-PATHS=(/copyparty /.cpr)
+P=/copyparty
+STALE=/.cpr
 
 find_cli() {
   if [ -n "${TAILSCALE_BIN+set}" ]; then printf '%s' "$TAILSCALE_BIN"; return; fi
@@ -47,22 +51,26 @@ if ! "$ts" status --json | jq -e '(.CertDomains // []) | length > 0' >/dev/null;
 fi
 
 changed=0
-for p in "${PATHS[@]}"; do
-  target="$BASE$p"
-  if [ "$(current_proxy "$json" "$p")" != "$target" ]; then
-    if ! setout="$("$ts" serve --bg --set-path "$p" "$target" 2>&1)"; then
-      echo "FAIL: tailscale serve --set-path $p failed:" >&2
-      echo "$setout" >&2
-      exit 1
-    fi
-    changed=1
+if [ "$(current_proxy "$json" "$P")" != "$BASE$P" ]; then
+  if ! setout="$("$ts" serve --bg --set-path "$P" "$BASE$P" 2>&1)"; then
+    echo "FAIL: tailscale serve --set-path $P failed:" >&2
+    echo "$setout" >&2
+    exit 1
   fi
-done
+  changed=1
+fi
+if [ "$(current_proxy "$json" "$STALE")" = "$BASE$STALE" ]; then
+  if ! offout="$("$ts" serve --https=443 --set-path "$STALE" off 2>&1)"; then
+    echo "FAIL: removing stale $STALE mapping failed:" >&2
+    echo "$offout" >&2
+    exit 1
+  fi
+  changed=1
+fi
 
 json="$(status)"
 refuse_if_funnel "$json" "after"
-for p in "${PATHS[@]}"; do
-  [ "$(current_proxy "$json" "$p")" = "$BASE$p" ] || { echo "FAIL: $p not mapped" >&2; exit 1; }
-done
+[ "$(current_proxy "$json" "$P")" = "$BASE$P" ] || { echo "FAIL: $P not mapped" >&2; exit 1; }
+[ "$(current_proxy "$json" "$STALE")" != "$BASE$STALE" ] || { echo "FAIL: stale $STALE still mapped to us" >&2; exit 1; }
 
 if [ "$changed" = 1 ]; then echo CHANGED; else echo OK; fi
