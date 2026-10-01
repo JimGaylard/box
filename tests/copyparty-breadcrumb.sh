@@ -26,15 +26,24 @@ while IFS= read -r a; do args+=("$a"); done < <(plutil -convert json -o - "$work
 "${args[@]}" >"$work/log" 2>&1 &
 pid=$!
 
+# copyparty prints "port N is busy on interface ..." when the port is taken
+# (the free port found above can be grabbed before it binds); report that
+# distinctly so a clash is never mistaken for a breadcrumb regression.
+clash_check() {
+  local l
+  l="$(sed -E $'s/\x1b\\[[0-9;]*m//g' "$work/log" | grep -iE 'is busy on interface|address already in use|errno 48' | head -n1)"
+  [ -z "$l" ] || fail "port $port clash: $l"
+}
+
 UA='Mozilla/5.0 (Macintosh) Firefox/130.0'
 url="http://127.0.0.1:$port/copyparty/sub/"
 html=""
 for _ in $(seq 1 100); do
-  kill -0 "$pid" 2>/dev/null || { cat "$work/log" >&2; fail "copyparty exited"; }
+  kill -0 "$pid" 2>/dev/null || { clash_check; cat "$work/log" >&2; fail "copyparty exited"; }
   html="$(curl -fs -A "$UA" "$url" 2>/dev/null)" && break
   html=""; sleep 0.2
 done
-[ -n "$html" ] || { cat "$work/log" >&2; fail "no listing from $url"; }
+[ -n "$html" ] || { clash_check; cat "$work/log" >&2; fail "no listing from $url"; }
 
 bad=0
 while IFS= read -r l; do
