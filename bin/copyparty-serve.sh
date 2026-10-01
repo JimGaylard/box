@@ -39,11 +39,22 @@ current_proxy() { # json path -> proxy target of that path on any host, or empty
 json="$(status)"
 refuse_if_funnel "$json" "before"
 
+# serve --https blocks on an "enable it at <url>" prompt when the tailnet has
+# HTTPS certificates off, so check first and never block.
+if ! "$ts" status --json | jq -e '(.CertDomains // []) | length > 0' >/dev/null; then
+  echo "REFUSE: HTTPS certificates are off on the tailnet; enable them in the admin console (DNS page), then re-run" >&2
+  exit 1
+fi
+
 changed=0
 for p in "${PATHS[@]}"; do
   target="$BASE$p"
   if [ "$(current_proxy "$json" "$p")" != "$target" ]; then
-    "$ts" serve --bg --set-path "$p" "$target" >/dev/null
+    if ! setout="$("$ts" serve --bg --set-path "$p" "$target" 2>&1)"; then
+      echo "FAIL: tailscale serve --set-path $p failed:" >&2
+      echo "$setout" >&2
+      exit 1
+    fi
     changed=1
   fi
 done

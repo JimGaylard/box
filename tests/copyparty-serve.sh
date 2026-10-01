@@ -11,6 +11,7 @@ fail() { echo "FAIL: $*" >&2; exit 1; }
 cat > "$work/tailscale" <<'STUB'
 #!/usr/bin/env bash
 echo "$*" >> "$FAKE_CALLS"
+if [ "$1 $2" = "status --json" ]; then echo "${FAKE_CERTS:-{\"CertDomains\":[\"fake.ts.net\"]}}"; exit 0; fi
 if [ "$1 $2 $3" = "serve status --json" ]; then cat "$FAKE_STATE"; exit 0; fi
 if [ "$1 $2 $3" = "serve --bg --set-path" ]; then
   jq --arg p "$4" --arg t "$5" \
@@ -65,6 +66,7 @@ cat > "$work/tailscale6" <<'STUB'
 if [ "$1 $2 $3" = "serve --bg --set-path" ]; then
   jq '.AllowFunnel = {"fake.ts.net:443": true} | .Web["fake.ts.net:443"].Handlers["'"$4"'"] = {Proxy: "'"$5"'"}' "$FAKE_STATE" > "$FAKE_STATE.new" && mv "$FAKE_STATE.new" "$FAKE_STATE"; exit 0
 fi
+if [ "$1 $2" = "status --json" ]; then echo '{"CertDomains":["fake.ts.net"]}'; exit 0; fi
 cat "$FAKE_STATE"
 STUB
 chmod +x "$work/tailscale6"; echo '{}' > "$FAKE_STATE"
@@ -76,5 +78,25 @@ TAILSCALE_BIN="$work/tailscale6" run
 out="$(TAILSCALE_BIN= COPYPARTY_NO_APP_LOOKUP=1 PATH=/usr/bin:/bin "$script" 2>&1)"; rc=$?
 [ $rc -eq 0 ] || fail "7: rc=$rc"
 case "$out" in *SKIP*) ;; *) fail "7: no SKIP message: $out";; esac
+
+# 8. HTTPS certs off (CertDomains null/empty) -> refuse before any set, clear message
+for certs in '{"CertDomains":null}' '{"CertDomains":[]}'; do
+  echo '{}' > "$FAKE_STATE"; FAKE_CERTS="$certs" run
+  [ $rc -ne 0 ] || fail "8: should refuse without certs ($certs)"
+  [ "$(sets)" = 0 ] || fail "8: set paths without certs"
+  case "$out" in *"HTTPS certificates are off"*"admin console"*) ;; *) fail "8: unclear message: $out";; esac
+done
+
+# 9. a failing set shows the CLI's output
+cat > "$work/tailscale9" <<'STUB'
+#!/usr/bin/env bash
+if [ "$1 $2" = "status --json" ]; then echo '{"CertDomains":["fake.ts.net"]}'; exit 0; fi
+if [ "$1 $2 $3" = "serve --bg --set-path" ]; then echo "enable it at https://example/enable-me"; exit 1; fi
+echo '{}'
+STUB
+chmod +x "$work/tailscale9"
+TAILSCALE_BIN="$work/tailscale9" run
+[ $rc -ne 0 ] || fail "9: should fail when set fails"
+case "$out" in *enable-me*) ;; *) fail "9: CLI output swallowed: $out";; esac
 
 echo PASS
