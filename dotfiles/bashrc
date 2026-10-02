@@ -2,9 +2,6 @@
 if [ -z "$__PATH_INITIALIZED" ]; then
   export PATH=/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin:~/bin:$PATH
 
-  # OTHER PATH
-  export PATH=$HOME/.local/bin:$PATH
-
   # Homebrew
   if [ -d "/home/linuxbrew/.linuxbrew" ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -13,6 +10,9 @@ if [ -z "$__PATH_INITIALIZED" ]; then
   elif [ -x "/usr/local/bin/brew" ]; then
     eval "$(/usr/local/bin/brew shellenv)"
   fi
+
+  # OTHER PATH, after Homebrew so uv's python/python3 in ~/.local/bin win over brew's
+  export PATH=$HOME/.local/bin:$PATH
 fi
 
 # Timezone
