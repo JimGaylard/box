@@ -20,9 +20,8 @@ get() { plutil -extract "$1" raw -o - "$out"; }
 [ "$(get KeepAlive)" = true ] || fail "KeepAlive"
 [ "$(get ThrottleInterval)" = 5 ] || fail "ThrottleInterval"
 args="$(plutil -convert json -o - "$out" | jq -r '.ProgramArguments | join(" ")')"
-want="/home/fake/.local/bin/copyparty -i 127.0.0.1 -p 3923 -v /home/fake/workspace/scratch/copyparty:copyparty:r --ipa 127.0.0.0/8 --xdev -s --no-reload"
+want="/home/fake/.local/bin/copyparty -i 127.0.0.1 -p 3923 -v /home/fake/workspace/scratch/copyparty:/:r --rp-loc /copyparty --ipa 127.0.0.0/8 --xdev -s --no-reload"
 [ "$args" = "$want" ] || fail "ProgramArguments: $args"
-case "$args" in *--rp-loc*) fail "--rp-loc present";; esac
 grep -q '/Users/' "$out" && fail "literal /Users/ in output"
 grep -q '/home/fake/.local/state/copyparty/' "$out" || fail "logs not under .local/state/copyparty"
 echo "PASS"
