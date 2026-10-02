@@ -13,7 +13,7 @@ tpl="${PLIST_TEMPLATE:-$root/dotfiles/launchd/com.jimgaylard.copyparty.plist.j2}
 work="$(mktemp -d)"; pid=""
 trap '[ -n "$pid" ] && kill "$pid" 2>/dev/null; wait 2>/dev/null' EXIT
 home="$work/home"; mkdir -p "$home/workspace/scratch/copyparty/sub"; echo hi > "$home/workspace/scratch/copyparty/sub/f.txt"
-port="$(python3 -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])')"
+port="$(uv run --no-project python -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])')"
 
 # Render the real template, take its ProgramArguments, swap only the -p value.
 ANSIBLE_LOCAL_TEMP="$work/tmp" ANSIBLE_HOME="$work/ah" ansible localhost -c local -m template \
