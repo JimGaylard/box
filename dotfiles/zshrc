@@ -1,7 +1,6 @@
 # SET $PATH
 if [ -z "$__PATH_INITIALIZED" ]; then
   export PATH=/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin:~/bin:$PATH
-  export PATH=$HOME/.local/bin:$PATH
 
   # Homebrew
   if [ -d "/opt/homebrew" ]; then
@@ -11,6 +10,9 @@ if [ -z "$__PATH_INITIALIZED" ]; then
   elif [ -x "/usr/local/bin/brew" ]; then
     eval "$(/usr/local/bin/brew shellenv)"
   fi
+
+  # After Homebrew so uv's python/python3 in ~/.local/bin win over brew's
+  export PATH=$HOME/.local/bin:$PATH
 fi
 
 # Timezone

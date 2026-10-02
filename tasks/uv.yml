@@ -6,6 +6,15 @@
   when: ansible_facts['os_family'] == "Darwin"
   tags: [uv, packages]
 
+- name: Install uv's managed Python as default python/python3 (Darwin)
+  command: uv python install --default --preview-features python-install-default
+  register: uv_python_default
+  # uv prints "Installed Python X" (to stderr) only when it installs or relinks;
+  # otherwise "Python is already installed".
+  changed_when: "'Installed Python' in uv_python_default.stderr"
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [uv, packages, uv-python]
+
 - name: Download uv installer (Linux)
   get_url:
     url: https://astral.sh/uv/install.sh
