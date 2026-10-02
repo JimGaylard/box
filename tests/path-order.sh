@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Offline test: in a fresh login shell built from the repo's zshrc, ~/.local/bin
-# (uv's managed python) must precede /opt/homebrew/bin, and the go/rust dirs
-# must too. Pass a dotfiles dir as $1 to test another checkout.
+# (uv's managed python), ~/go/bin and ~/.cargo/bin must each precede
+# /opt/homebrew/bin. Pass a dotfiles dir as $1 to test another checkout.
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 dots="${1:-$root/dotfiles}"

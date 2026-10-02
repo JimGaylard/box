@@ -105,7 +105,7 @@
 
     - name: Setup uv
       include_tasks: ../tasks/uv.yml
-      tags: [uv, dotfiles]
+      tags: [uv, uv-python, packages, dotfiles]
 
     - name: Setup rust
       include_tasks: ../tasks/rust.yml
