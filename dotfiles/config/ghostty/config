@@ -24,3 +24,6 @@ scrollback-limit = 10000
 
 # Don't prompt when closing a surface with a running process
 confirm-close-surface = false
+
+# Bell: keep the title indicator, drop the dock bounce (attention) when a pane rings in the background
+bell-features = no-system,no-audio,no-attention,title,no-border
