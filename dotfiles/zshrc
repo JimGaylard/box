@@ -18,6 +18,9 @@ fi
 # Timezone
 export TZ=Australia/Melbourne
 
+# desk
+export DESK_HOME=/Users/jimg/workspace/desk
+
 # SSH Keychain
 if command -v keychain &>/dev/null; then
   eval $(keychain --eval --agents ssh ~/.ssh/id_ed25519)
