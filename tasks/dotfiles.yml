@@ -29,6 +29,15 @@
   when: ansible_facts['os_family'] == "Darwin"
   tags: [dotfiles]
 
+- name: zshenv
+  copy:
+    src: "{{ playbook_dir }}/../dotfiles/zshenv"
+    dest: "{{ ansible_facts['user_dir'] }}/.zshenv"
+    force: yes
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Darwin"
+  tags: [dotfiles]
+
 - name: shell_functions
   copy:
     src: "{{ playbook_dir }}/../dotfiles/shell_functions"

@@ -1,0 +1,5 @@
+# Read by every zsh, interactive or not, so agent tool shells see these too.
+# Keep it to plain exports: no output, no slow commands.
+
+# desk
+export DESK_HOME=/Users/jimg/.tars/desk
